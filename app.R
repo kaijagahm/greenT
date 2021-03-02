@@ -10,64 +10,80 @@ library(randomcoloR) # for randomly-generated colors
 library(ggplot2)
 source(here("functions.R"))
 
-
-ui <- fluidPage(
-  tags$head(    
-    tags$style("label {display:inline;}") # this isn't working--I'd like to display the labels next to the pickers instead of above them, but I don't really know any css. 
-  ),
-  titlePanel(title = "greenT"),
-  fluidRow(
-    column(width = 2,
-           colourInput("a", "A", value = randomColor()),
-           colourInput("g", "G", value = randomColor()),
-           colourInput("m", "M", value = randomColor()),
-           colourInput("s", "S", value = randomColor()),
-           colourInput("y", "Y", value = randomColor()),
-           colourInput("five", "5", value = randomColor())),
-    column(width = 2,
-           colourInput("b", "B", value = randomColor()),
-           colourInput("h", "H", value = randomColor()),
-           colourInput("n", "N", value = randomColor()),
-           colourInput("t", "T", value = randomColor()),
-           colourInput("z", "Z", value = randomColor()),
-           colourInput("six", "6", value = randomColor())),
-    column(width = 2,
-           colourInput("c", "C", value = randomColor()),
-           colourInput("i", "I", value = randomColor()),
-           colourInput("o", "O", value = randomColor()),
-           colourInput("u", "U", value = randomColor()),
-           colourInput("one", "1", value = randomColor()),
-           colourInput("seven", "7", value = randomColor())),
-    column(width = 2,
-           colourInput("d", "D", value = randomColor()),
-           colourInput("j", "J", value = randomColor()),
-           colourInput("p", "P", value = randomColor()),
-           colourInput("v", "V", value = randomColor()),
-           colourInput("two", "2", value = randomColor()),
-           colourInput("eight", "8", value = randomColor())),
-    column(width = 2,
-           colourInput("e", "E", value = randomColor()),
-           colourInput("k", "K", value = randomColor()),
-           colourInput("q", "Q", value = randomColor()),
-           colourInput("w", "W", value = randomColor()),
-           colourInput("three", "3", value = randomColor()),
-           colourInput("nine", "9", value = randomColor())),
-    column(width = 2,
-           colourInput("f", "F", value = randomColor()),
-           colourInput("l", "L", value = randomColor()),
-           colourInput("r", "R", value = randomColor()),
-           colourInput("x", "X", value = randomColor()),
-           colourInput("four", "4", value = randomColor()),
-           colourInput("zero", "0", value = randomColor()))),
-  fluidRow(
-    column(width = 12,
-           textInput("displayText", "Text to display:", value = "test-123")
+ui <- function(request){
+  fluidPage(
+    tags$head(     
+      tags$style(HTML("@import url('https://fonts.googleapis.com/css2?family=Baloo+2&display=swap');
+      body {
+        background-color: white;
+      }
+      * {
+        font-family: 'Baloo 2', sans-serif;
+      }")
+      )
+    ),
+    titlePanel(title = "greenT"),
+    fluidRow(
+      column(width = 2,
+             colourInput("a", "A", value = randomColor()),
+             colourInput("g", "G", value = randomColor()),
+             colourInput("m", "M", value = randomColor()),
+             colourInput("s", "S", value = randomColor()),
+             colourInput("y", "Y", value = randomColor()),
+             colourInput("five", "5", value = randomColor())),
+      column(width = 2,
+             colourInput("b", "B", value = randomColor()),
+             colourInput("h", "H", value = randomColor()),
+             colourInput("n", "N", value = randomColor()),
+             colourInput("t", "T", value = randomColor()),
+             colourInput("z", "Z", value = randomColor()),
+             colourInput("six", "6", value = randomColor())),
+      column(width = 2,
+             colourInput("c", "C", value = randomColor()),
+             colourInput("i", "I", value = randomColor()),
+             colourInput("o", "O", value = randomColor()),
+             colourInput("u", "U", value = randomColor()),
+             colourInput("one", "1", value = randomColor()),
+             colourInput("seven", "7", value = randomColor())),
+      column(width = 2,
+             colourInput("d", "D", value = randomColor()),
+             colourInput("j", "J", value = randomColor()),
+             colourInput("p", "P", value = randomColor()),
+             colourInput("v", "V", value = randomColor()),
+             colourInput("two", "2", value = randomColor()),
+             colourInput("eight", "8", value = randomColor())),
+      column(width = 2,
+             colourInput("e", "E", value = randomColor()),
+             colourInput("k", "K", value = randomColor()),
+             colourInput("q", "Q", value = randomColor()),
+             colourInput("w", "W", value = randomColor()),
+             colourInput("three", "3", value = randomColor()),
+             colourInput("nine", "9", value = randomColor())),
+      column(width = 2,
+             colourInput("f", "F", value = randomColor()),
+             colourInput("l", "L", value = randomColor()),
+             colourInput("r", "R", value = randomColor()),
+             colourInput("x", "X", value = randomColor()),
+             colourInput("four", "4", value = randomColor()),
+             colourInput("zero", "0", value = randomColor()))),
+    fluidRow(
+      # Text input ---------------------------------------------------------
+      column(width = 9,
+             textInput("displayText", "Text to display:", value = "test-123")
+      ),
+      
+      # Bookmark button ----------------------------------------------------
+      column(width = 3,
+             br(),
+             bookmarkButton(label = "Save these colors",
+                            icon = shiny::icon("heart-empty", lib = "glyphicon"))
+      )
+    ),
+    fluidRow(
+      plotOutput("colorBlocks")
     )
-  ),
-  fluidRow(
-    plotOutput("colorBlocks")
   )
-)
+}
 
 server <- function(input, output, session){
   
@@ -141,12 +157,13 @@ server <- function(input, output, session){
                       str_replace_all(., "\\s{2,}", " "), # replace runs of multiple spaces with a single space
                     split = ""))
   )
-
+  
   # Create a rectangle data frame
   rectangleDF <- reactive({
-    data.frame(grapheme = split()) %>%
-      mutate(x = 1:nrow(.),
-             y = 5) %>%
+    req(length(split()) > 0) # will only work when there is text entered in the box
+    data.frame(grapheme = split(),
+               y = 5) %>%
+      mutate(x = 1:nrow(.)) %>%
       left_join(colorsDF(), by = c("grapheme"))
   }
   )
@@ -158,7 +175,7 @@ server <- function(input, output, session){
       geom_tile(aes(fill = hex))+
       scale_fill_identity()+
       theme_void()
-      
+    
   })
   
 }
