@@ -6,7 +6,10 @@ library(stringr) # for dealing with text
 library(data.table) # for binding the list into a data frame
 library(forcats) # for dealing with factor recoding
 library(here) # for file paths
+library(randomcoloR) # for randomly-generated colors
+library(ggplot2)
 source(here("functions.R"))
+
 
 ui <- fluidPage(
   tags$head(    
@@ -15,50 +18,50 @@ ui <- fluidPage(
   titlePanel(title = "greenT"),
   fluidRow(
     column(width = 2,
-           colourInput("a", "A"),
-           colourInput("g", "G"),
-           colourInput("m", "M"),
-           colourInput("s", "S"),
-           colourInput("y", "Y"),
-           colourInput("five", "5")),
+           colourInput("a", "A", value = randomColor()),
+           colourInput("g", "G", value = randomColor()),
+           colourInput("m", "M", value = randomColor()),
+           colourInput("s", "S", value = randomColor()),
+           colourInput("y", "Y", value = randomColor()),
+           colourInput("five", "5", value = randomColor())),
     column(width = 2,
-           colourInput("b", "B"),
-           colourInput("h", "H"),
-           colourInput("n", "N"),
-           colourInput("t", "T"),
-           colourInput("z", "Z"),
-           colourInput("six", "6")),
+           colourInput("b", "B", value = randomColor()),
+           colourInput("h", "H", value = randomColor()),
+           colourInput("n", "N", value = randomColor()),
+           colourInput("t", "T", value = randomColor()),
+           colourInput("z", "Z", value = randomColor()),
+           colourInput("six", "6", value = randomColor())),
     column(width = 2,
-           colourInput("c", "C"),
-           colourInput("i", "I"),
-           colourInput("o", "O"),
-           colourInput("u", "U"),
-           colourInput("one", "1"),
-           colourInput("seven", "7")),
+           colourInput("c", "C", value = randomColor()),
+           colourInput("i", "I", value = randomColor()),
+           colourInput("o", "O", value = randomColor()),
+           colourInput("u", "U", value = randomColor()),
+           colourInput("one", "1", value = randomColor()),
+           colourInput("seven", "7", value = randomColor())),
     column(width = 2,
-           colourInput("d", "D"),
-           colourInput("j", "J"),
-           colourInput("p", "P"),
-           colourInput("v", "V"),
-           colourInput("two", "2"),
-           colourInput("eight", "8")),
+           colourInput("d", "D", value = randomColor()),
+           colourInput("j", "J", value = randomColor()),
+           colourInput("p", "P", value = randomColor()),
+           colourInput("v", "V", value = randomColor()),
+           colourInput("two", "2", value = randomColor()),
+           colourInput("eight", "8", value = randomColor())),
     column(width = 2,
-           colourInput("e", "E"),
-           colourInput("k", "K"),
-           colourInput("q", "Q"),
-           colourInput("w", "W"),
-           colourInput("three", "3"),
-           colourInput("nine", "9")),
+           colourInput("e", "E", value = randomColor()),
+           colourInput("k", "K", value = randomColor()),
+           colourInput("q", "Q", value = randomColor()),
+           colourInput("w", "W", value = randomColor()),
+           colourInput("three", "3", value = randomColor()),
+           colourInput("nine", "9", value = randomColor())),
     column(width = 2,
-           colourInput("f", "F"),
-           colourInput("l", "L"),
-           colourInput("r", "R"),
-           colourInput("x", "X"),
-           colourInput("four", "4"),
-           colourInput("zero", "0"))),
+           colourInput("f", "F", value = randomColor()),
+           colourInput("l", "L", value = randomColor()),
+           colourInput("r", "R", value = randomColor()),
+           colourInput("x", "X", value = randomColor()),
+           colourInput("four", "4", value = randomColor()),
+           colourInput("zero", "0", value = randomColor()))),
   fluidRow(
     column(width = 12,
-           textInput("displayText", "Text to display:", value = "/&@*3q984tguqerlgjq34pt  2p3ot 34kt34t ")
+           textInput("displayText", "Text to display:", value = "test-123")
     )
   ),
   fluidRow(
@@ -74,31 +77,31 @@ server <- function(input, output, session){
   # I'm not 100% sure this is right...
   observe({
     colors$a <- input$a
-    colors$b <- input$a
-    colors$c <- input$a
-    colors$d <- input$a
-    colors$e <- input$a
-    colors$f <- input$a
-    colors$g <- input$a
-    colors$h <- input$a
-    colors$i <- input$a
-    colors$j <- input$a
-    colors$k <- input$a
-    colors$l <- input$a
-    colors$m <- input$a
-    colors$n <- input$a
-    colors$o <- input$a
-    colors$p <- input$a
-    colors$q <- input$a
-    colors$r <- input$a
-    colors$s <- input$a
-    colors$t <- input$a
-    colors$u <- input$a
-    colors$v <- input$a
-    colors$w <- input$a
-    colors$x <- input$a
-    colors$y <- input$a
-    colors$z <- input$a
+    colors$b <- input$b
+    colors$c <- input$c
+    colors$d <- input$d
+    colors$e <- input$e
+    colors$f <- input$f
+    colors$g <- input$g
+    colors$h <- input$h
+    colors$i <- input$i
+    colors$j <- input$j
+    colors$k <- input$k
+    colors$l <- input$l
+    colors$m <- input$m
+    colors$n <- input$n
+    colors$o <- input$o
+    colors$p <- input$p
+    colors$q <- input$q
+    colors$r <- input$r
+    colors$s <- input$s
+    colors$t <- input$t
+    colors$u <- input$u
+    colors$v <- input$v
+    colors$w <- input$w
+    colors$x <- input$x
+    colors$y <- input$y
+    colors$z <- input$z
     colors$one <- input$one
     colors$two <- input$two
     colors$three <- input$three
@@ -134,21 +137,29 @@ server <- function(input, output, session){
   # Convert input to lowercase, replace all non-alphanumeric characters with a blank space, and split the string into a vector
   split <- reactive( 
     unlist(strsplit(str_replace_all(tolower(input$displayText),
-                                    "[^a-z0-9]", " ") %>% # replace all non-alnum characters with a space
+                                    "[^a-z0-9]", " ") %>% # replace all non-alphanumeric characters with a space
                       str_replace_all(., "\\s{2,}", " "), # replace runs of multiple spaces with a single space
                     split = ""))
   )
   
   # Create a rectangle data frame
   rectangleDF <- reactive({
-    data.frame(grapheme = split(),
-               y1 = 0,
-               y2 = 5) %>%
-      mutate(x1 = 1:nrow(.),
-             x2 = 2:(nrow(.) + 1)) %>%
+    data.frame(grapheme = split()) %>%
+      mutate(x = 1:nrow(.),
+             y = 5) %>%
       left_join(colorsDF(), by = c("grapheme"))
   }
   )
+  
+  # Plot the color blocks
+  output$colorBlocks <- renderPlot({
+    rectangleDF() %>%
+      ggplot(aes(x, y))+
+      geom_tile(aes(fill = hex))+
+      scale_fill_identity()+
+      theme_void()
+      
+  })
   
 }
 shinyApp(ui, server)
