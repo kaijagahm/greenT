@@ -3,6 +3,8 @@ library(colourpicker) # for color inputs
 library(dplyr) # because i like pipes
 library(stringr) # for dealing with text
 # Some random change to the code.
+library(data.table) # for binding the list into a data frame
+library(forcats) # for dealing with factor recoding
 
 ui <- fluidPage(
   tags$head(    
@@ -54,7 +56,7 @@ ui <- fluidPage(
            colourInput("zero", "0"))),
   fluidRow(
     column(width = 12,
-           textInput("displayText", "Text to display:", value = "Your name")
+           textInput("displayText", "Text to display:", value = "/&@*3q984tguqerlgjq34pt  2p3ot 34kt34t ")
     )
   ),
   fluidRow(
@@ -63,7 +65,11 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session){
-  colors <- reactiveValues()
+
+# Save the user-entered color values --------------------------------------
+  colors <- reactiveValues(space = "#FFFFFF") # initialize an empty reactiveValues object
+  # When any of the colors change, change the value in colors()
+  # I'm not 100% sure this is right...
   observe({
     colors$a <- input$a
     colors$b <- input$a
@@ -102,26 +108,48 @@ server <- function(input, output, session){
     colors$nine <- input$nine
     colors$zero <- input$zero
   })
+  # Convert the reactiveValues object into a data frame so we can use it more easily.
+  colorsDF <- eventReactive(colors, {
+    reactiveValuesToList(colors) %>%
+      lapply(., as.data.frame) %>%
+      rbindlist(idcol = "grapheme") %>%
+      as.data.frame() %>%
+      rename("hex" = "X[[i]]") %>%
+      mutate(grapheme = forcats::fct_recode(grapheme,
+                                            " " = "space",
+                                            "1" = "one",
+                                            "2" = "two",
+                                            "3" = "three",
+                                            "4" = "four",
+                                            "5" = "five",
+                                            "6" = "six",
+                                            "7" = "seven",
+                                            "8" = "eight",
+                                            "9" = "nine",
+                                            "0" = "zero"))
+  })
   
-  # Convert input to lowercase, replace all non-letter characters with a blank space, and split all the characters up into a vector. Later on, we might want to reconsider how the app behaves with non-letter characters, but this seems easiest for now.
+  # Convert input to lowercase, replace all non-alphanumeric characters with a blank space, and split the string into a vector
   split <- reactive( 
-    unlist(strsplit(str_replace_all(tolower(input$displayText), "[^a-z]", " "), split = ""))
+    unlist(strsplit(str_replace_all(tolower(input$displayText),
+                                    "[^a-z0-9]", " ") %>% # replace all non-alnum characters with a space
+                      str_replace_all(., "\\s{2,}", " "), # replace runs of multiple spaces with a single space
+                    split = ""))
   )
-  
-  # length of the display text string
-  len <- reactive(length(split())) 
   
   # Create a rectangle data frame
   rectangleDF <- reactive({
-    data.frame(letter = split(),
+    data.frame(grapheme = split(),
                y1 = 0,
-               y2 = 5,
-               x1 = 1:len(),
-               x2 = 2:(len()+1))
+               y2 = 5) %>%
+      mutate(x1 = 1:nrow(.),
+             x2 = 2:(nrow(.) + 1)) %>%
+      left_join(colorsDF(), by = c("grapheme"))
   }
   )
-  observe({
-    rvtl <- reactiveValuesToList(colors)
+
+  observeEvent(rectangleDF, {
+    browser()
   })
   
 }
