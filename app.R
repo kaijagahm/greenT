@@ -141,7 +141,7 @@ server <- function(input, output, session){
                       str_replace_all(., "\\s{2,}", " "), # replace runs of multiple spaces with a single space
                     split = ""))
   )
-  # this is a test
+
   # Create a rectangle data frame
   rectangleDF <- reactive({
     data.frame(grapheme = split()) %>%
