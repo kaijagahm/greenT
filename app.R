@@ -5,6 +5,8 @@ library(stringr) # for dealing with text
 # Some random change to the code.
 library(data.table) # for binding the list into a data frame
 library(forcats) # for dealing with factor recoding
+library(here) # for file paths
+source(here("functions.R"))
 
 ui <- fluidPage(
   tags$head(    
@@ -65,8 +67,8 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session){
-
-# Save the user-entered color values --------------------------------------
+  
+  # Save the user-entered color values --------------------------------------
   colors <- reactiveValues(space = "#FFFFFF") # initialize an empty reactiveValues object
   # When any of the colors change, change the value in colors()
   # I'm not 100% sure this is right...
@@ -147,10 +149,6 @@ server <- function(input, output, session){
       left_join(colorsDF(), by = c("grapheme"))
   }
   )
-
-  observeEvent(rectangleDF, {
-    browser()
-  })
   
 }
 shinyApp(ui, server)
