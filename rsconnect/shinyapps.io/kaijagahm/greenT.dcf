@@ -1,0 +1,13 @@
+name: greenT
+title: greenT
+username:
+account: kaijagahm
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3724791
+bundleId: 4292702
+url: https://kaijagahm.shinyapps.io/greenT/
+when: 1614728110.58585
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .Rprofile
