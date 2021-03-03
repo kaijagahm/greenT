@@ -30,7 +30,7 @@ ui <- function(request){ # UI as a function to enable bookmarking
     ),
     
     # Title and subtitle, two different formats
-    titlePanel(div(HTML("<b>greenT  </b> <em><small>exploring grapheme-color synesthesia</em></small>"))),
+    titlePanel(div(HTML("<b>greenT  </b> <em><small>exploring grapheme-color synesthesia</em></small>")), windowTitle = "greenT"),
     
     # Body
     # Color pickers -------------------------------------------------------
@@ -109,52 +109,51 @@ ui <- function(request){ # UI as a function to enable bookmarking
 }
 
 server <- function(input, output, session){
+  # Save the user-entered color values --------------------------------------
+  colorsList <- reactive({
+    list("space" = "#FFFFFF",
+         "a" = input$a,
+         "b" = input$b,
+         "c" = input$c,
+         "d" = input$d,
+         "e" = input$e,
+         "f" = input$f,
+         "g" = input$g,
+         "h" = input$h,
+         "i" = input$i,
+         "j" = input$j,
+         "k" = input$k,
+         "l" = input$l,
+         "m" = input$m,
+         "n" = input$n,
+         "o" = input$o,
+         "p" = input$p,
+         "q" = input$q,
+         "r" = input$r,
+         "s" = input$s,
+         "t" = input$t,
+         "u" = input$u,
+         "v" = input$v,
+         "w" = input$w,
+         "x" = input$x,
+         "y" = input$y,
+         "z" = input$z,
+         "one" = input$one,
+         "two" = input$two,
+         "three" = input$three,
+         "four" = input$four,
+         "five" = input$five,
+         "six" = input$six,
+         "seven" = input$seven,
+         "eight" = input$eight,
+         "nine" = input$nine,
+         "zero" = input$zero)
+  })
   
   # Save the user-entered color values --------------------------------------
-  colors <- reactiveValues(space = "#FFFFFF") # initialize an empty reactiveValues object
-  # When any of the colors change, change the value in colors()
-  # I'm not 100% sure this is right...
-  observe({
-    colors$a <- input$a
-    colors$b <- input$b
-    colors$c <- input$c
-    colors$d <- input$d
-    colors$e <- input$e
-    colors$f <- input$f
-    colors$g <- input$g
-    colors$h <- input$h
-    colors$i <- input$i
-    colors$j <- input$j
-    colors$k <- input$k
-    colors$l <- input$l
-    colors$m <- input$m
-    colors$n <- input$n
-    colors$o <- input$o
-    colors$p <- input$p
-    colors$q <- input$q
-    colors$r <- input$r
-    colors$s <- input$s
-    colors$t <- input$t
-    colors$u <- input$u
-    colors$v <- input$v
-    colors$w <- input$w
-    colors$x <- input$x
-    colors$y <- input$y
-    colors$z <- input$z
-    colors$one <- input$one
-    colors$two <- input$two
-    colors$three <- input$three
-    colors$four <- input$four
-    colors$five <- input$five
-    colors$six <- input$six
-    colors$seven <- input$seven
-    colors$eight <- input$eight
-    colors$nine <- input$nine
-    colors$zero <- input$zero
-  })
   # Convert the reactiveValues object into a data frame so we can use it more easily.
-  colorsDF <- eventReactive(colors, {
-    reactiveValuesToList(colors) %>%
+  colorsDF <- eventReactive(colorsList(), {
+      colorsList() %>%
       lapply(., as.data.frame) %>%
       rbindlist(idcol = "grapheme") %>%
       as.data.frame() %>%
