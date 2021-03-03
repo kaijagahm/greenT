@@ -17,7 +17,7 @@ ui <- function(request){ # UI as a function to enable bookmarking
   fluidPage(
     
     # Change the font for the whole app -----------------------------------
-    ## white is already the default background color; just leaving this here in case we decide to change it later.
+    ## white is already the default background color; leaving this here in case want to change it later.
     tags$head(     
       tags$style(HTML("@import url('https://fonts.googleapis.com/css2?family=Baloo+2&display=swap');
       body {
@@ -30,23 +30,27 @@ ui <- function(request){ # UI as a function to enable bookmarking
     ),
     
     # Title and subtitle, two different formats
-    titlePanel(div(HTML("<b>greenT  </b> <em><small>exploring grapheme-color synesthesia</em></small>")), windowTitle = "greenT"),
+    titlePanel(div(HTML("<b>greenT  </b> <em><small>exploring grapheme-color synesthesia</em></small>")),
+               windowTitle = "greenT"), # windowTitle controls what shows up on the browser tab
     
     # Body
     # Color pickers -------------------------------------------------------
+    ## Note that I've arranged these so that the alphabet goes left to right, then top to bottom, instead of going down the columns. I initially had it going down the columns and it looked weird.
     fluidRow(
-      bsCollapse(
+      bsCollapse( # creates an environment in which collapsible panels can live
         id = "colorSelectors", open = "setColors",
+        # Collapsible panel for the color selectors.
         bsCollapsePanel(
-          title = HTML("<em><small>Show/hide selectors</em></small>"),
-          value = "setColors",
+          # This is a bit of a hack: you're supposed to use this for the title of the panel, but I don't want a panel title. I just want the user to know where to click in order to collapse/open the panel. There is probably a better/cleaner way to do this.
+          title = HTML("<em><small>Show/hide selectors</em></small>"), 
+          value = "setColors", # allows us to control when this opens/closes
           column(width = 2,
                  colourInput("a", "A", value = randomColor()),
                  colourInput("g", "G", value = randomColor()),
                  colourInput("m", "M", value = randomColor()),
                  colourInput("s", "S", value = randomColor()),
                  colourInput("y", "Y", value = randomColor()),
-                 colourInput("five", "5", value = randomColor())),
+                 colourInput("five", "5", value = randomColor())), # can't have a digit as a variable name without jumping through hoops
           column(width = 2,
                  colourInput("b", "B", value = randomColor()),
                  colourInput("h", "H", value = randomColor()),
@@ -90,18 +94,20 @@ ui <- function(request){ # UI as a function to enable bookmarking
       column(width = 9,
              textInput("displayText", 
                        "Text to display:", 
-                       value = "Type something")
+                       value = "Type something") # initial text in the box
       ),
       
       # Bookmark button ----------------------------------------------------
       column(width = 3,
              br(), # just so the spacing aligns better with the text entry box
-             bookmarkButton(label = "Save these colors",
+             bookmarkButton(label = "Save these colors", # not sure I like this?
                             icon = shiny::icon("heart-empty", lib = "glyphicon"))
       )
     ),
     
     # Output object -------------------------------------------------------
+    # A ggplot with colored blocks. 
+    ## In future, this may turn into a tabset with two modes, either colored blocks or colored text.
     fluidRow(
       plotOutput("colorBlocks")
     )
@@ -154,11 +160,11 @@ server <- function(input, output, session){
   # Convert the reactiveValues object into a data frame so we can use it more easily.
   colorsDF <- eventReactive(colorsList(), {
       colorsList() %>%
-      lapply(., as.data.frame) %>%
-      rbindlist(idcol = "grapheme") %>%
-      as.data.frame() %>%
-      rename("hex" = "X[[i]]") %>%
-      mutate(grapheme = forcats::fct_recode(grapheme,
+      lapply(., as.data.frame) %>% # convert each element to a df so we will be able to use rbindlist
+      rbindlist(idcol = "grapheme") %>% # store list names in a column called "grapheme"
+      as.data.frame() %>% # this is in some weird format, so make it a df
+      rename("hex" = "X[[i]]") %>% # change default name to "hex" bc duh.
+      mutate(grapheme = forcats::fct_recode(grapheme, # have to change these to allow the join to work
                                             " " = "space",
                                             "1" = "one",
                                             "2" = "two",
@@ -180,7 +186,8 @@ server <- function(input, output, session){
                     split = ""))
   )
   
-  # Create a rectangle data frame
+
+  # Create df input for the ggplot ------------------------------------------
   rectangleDF <- reactive({
     req(length(split()) > 0) # will only work when there is text entered in the box
     data.frame(grapheme = split(),
@@ -190,14 +197,15 @@ server <- function(input, output, session){
   }
   )
   
-  # Plot the color blocks
+
+  # Plot color blocks -------------------------------------------------------
   output$colorBlocks <- renderPlot({
     rectangleDF() %>%
       ggplot(aes(x, y))+
-      geom_tile(aes(fill = hex))+
-      scale_fill_identity()+
-      theme_void()
+      geom_tile(aes(fill = hex))+ # fill w hex colors
+      scale_fill_identity()+ # take the literal hex values as colors, instead of mapping other colors to them.
+      theme_void() # totally blank background
   })
   
 }
-shinyApp(ui, server)
+shinyApp(ui, server, enableBookmarking = "url")
