@@ -23,4 +23,4 @@ Please feel free to submit an issue if something is broken or if you'd like to s
 
 ## Creators
 
-This app is a collaboration of [Kaija Gahm](https://github.com/kaijagahm) and Jonathan Trattner(https://github.com/jdtrat).
+This app is a collaboration of [Kaija Gahm](https://github.com/kaijagahm) and [Jonathan Trattner](https://github.com/jdtrat).
