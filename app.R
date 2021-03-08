@@ -19,15 +19,9 @@ ui <- function(request){ # UI as a function to enable bookmarking
     # Change the font for the whole app -----------------------------------
     ## white is already the default background color; leaving this here in case want to change it later.
     tags$head(     
-      tags$style(HTML("@import url('https://fonts.googleapis.com/css2?family=Baloo+2&display=swap');
-      body {
-        background-color: white;
-      }
-      * {
-        font-family: 'Baloo 2', sans-serif;
-      }")
-      )
-    ),
+      tags$link(rel = "stylesheet", type = "text/css", href = "tea-style.css"),
+      tags$script(src = "custom.js")
+      ),
     
     # Title and subtitle, two different formats
     titlePanel(div(HTML("<b>greenT  </b> <em><small>exploring grapheme-color synesthesia</em></small>")),
@@ -109,7 +103,8 @@ ui <- function(request){ # UI as a function to enable bookmarking
     # A ggplot with colored blocks. 
     ## In future, this may turn into a tabset with two modes, either colored blocks or colored text.
     fluidRow(
-      plotOutput("colorBlocks")
+      plotOutput("colorBlocks"),
+      textOutput("coloredText")
     )
   )
 }
@@ -205,6 +200,11 @@ server <- function(input, output, session){
       geom_tile(aes(fill = hex))+ # fill w hex colors
       scale_fill_identity()+ # take the literal hex values as colors, instead of mapping other colors to them.
       theme_void() # totally blank background
+  })
+  
+  
+  output$coloredText <- renderText({
+    input$displayText
   })
   
 }
