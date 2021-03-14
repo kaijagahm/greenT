@@ -9,6 +9,7 @@ library(here) # for file paths
 library(randomcoloR) # for randomly-generated colors
 library(ggplot2)
 library(shinyBS)
+library(grDevices)
 source(here("functions.R"))
 
 
@@ -190,10 +191,18 @@ server <- function(input, output, session){
     data.frame(grapheme = split(),
                y = 5) %>%
       mutate(x = 1:nrow(.)) %>%
-      left_join(colorsDF(), by = c("grapheme"))
+      left_join(colorsDF(), by = c("grapheme")) %>%
+      mutate(r = col2rgb(hex)[1,],
+             g = col2rgb(hex)[2,],
+             b = col2rgb(hex)[3,]) %>%
+      mutate(contrastColor = case_when((r*0.299 + g*0.587 + b*0.114) > 150 ~ "#000000",
+                                       TRUE ~ "#FFFFFF"))
   }
   )
   
+  # observeEvent(rectangleDF(), {
+  #   browser()
+  # })
 
   # Plot color blocks -------------------------------------------------------
   output$colorBlocks <- renderPlot({
