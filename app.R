@@ -13,6 +13,7 @@ library(grDevices)
 source(here("functions.R"))
 library(showtext) # for fonts
 library(sysfonts)
+library(shinyWidgets)
 font_add_google("Baloo 2")
 showtext_auto()
 
@@ -108,9 +109,18 @@ ui <- function(request){ # UI as a function to enable bookmarking
       id = "viz",
       type = "tabs",
       # a ggplot object showing colored blocks
-      tabPanel("Rectangles", plotOutput("colorBlocks")),
+      tabPanel("Rectangles", 
+               br(),
+               div(prettySwitch(
+                 inputId = "showLetters",
+                 label = "Show letters?",
+                 value = TRUE
+               ),
+               style = "margin-bottom: -10px"),
+               plotOutput("colorBlocks")),
       # colored text, rendered with javascript
-      tabPanel("Text", textOutput("coloredText"))
+      tabPanel("Text", 
+               textOutput("coloredText"))
     )
   )
 }
@@ -217,10 +227,12 @@ server <- function(input, output, session){
                     fill = hex))+ # fill w hex colors
       scale_fill_identity()+ # take the literal hex values as colors, instead of mapping other colors to them.
       theme_void() + # totally blank background
-      geom_text(aes(x = xmin + 0.5, y = ymin + 0.3, label = grapheme, 
-                    col = contrastColor),
-                size = 7,
-                family = "Baloo 2")+
+      {if(input$showLetters)geom_text(aes(x = xmin + 0.5, 
+                                          y = ymin + 0.3, 
+                                          label = grapheme,
+                                          col = contrastColor),
+                                      size = 7,
+                                      family = "Baloo 2")}+
       scale_color_identity()
       
   })
