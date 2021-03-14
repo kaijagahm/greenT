@@ -210,7 +210,10 @@ server <- function(input, output, session){
       ggplot(aes(x, y))+
       geom_tile(aes(fill = hex))+ # fill w hex colors
       scale_fill_identity()+ # take the literal hex values as colors, instead of mapping other colors to them.
-      theme_void() # totally blank background
+      theme_void() + # totally blank background
+      geom_text(aes(x = x, y = y-0.4, label = grapheme, 
+                    col = contrastColor))+
+      scale_color_identity()
   })
   
   
