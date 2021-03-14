@@ -94,17 +94,19 @@ ui <- function(request){ # UI as a function to enable bookmarking
       # Bookmark button ----------------------------------------------------
       column(width = 3,
              br(), # just so the spacing aligns better with the text entry box
-             bookmarkButton(label = "Save these colors", # not sure I like this?
+             bookmarkButton(label = "Save this",
                             icon = shiny::icon("heart-empty", lib = "glyphicon"))
       )
     ),
     
     # Output object -------------------------------------------------------
-    # A ggplot with colored blocks. 
-    ## In future, this may turn into a tabset with two modes, either colored blocks or colored text.
-    fluidRow(
-      plotOutput("colorBlocks"),
-      textOutput("coloredText")
+    tabsetPanel(
+      id = "viz",
+      type = "tabs",
+      # a ggplot object showing colored blocks
+      tabPanel("Rectangles", plotOutput("colorBlocks")),
+      # colored text, rendered with javascript
+      tabPanel("Text", textOutput("coloredText"))
     )
   )
 }
@@ -203,6 +205,7 @@ server <- function(input, output, session){
   })
   
   
+  # Plot colored text -------------------------------------------------------
   output$coloredText <- renderText({
     input$displayText
   })
