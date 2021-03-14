@@ -11,7 +11,10 @@ library(ggplot2)
 library(shinyBS)
 library(grDevices)
 source(here("functions.R"))
-
+library(showtext) # for fonts
+library(sysfonts)
+font_add_google("Baloo 2")
+showtext_auto()
 
 # UI ----------------------------------------------------------------------
 ui <- function(request){ # UI as a function to enable bookmarking
@@ -189,13 +192,14 @@ server <- function(input, output, session){
   rectangleDF <- reactive({
     req(length(split()) > 0) # will only work when there is text entered in the box
     data.frame(grapheme = split(),
-               y = 5) %>%
-      mutate(x = 1:nrow(.)) %>%
+               ymin = 1,
+               ymax = 5) %>%
+      mutate(xmin = 1:nrow(.), xmax = 2:(nrow(.)+1)) %>%
       left_join(colorsDF(), by = c("grapheme")) %>%
       mutate(r = col2rgb(hex)[1,],
              g = col2rgb(hex)[2,],
              b = col2rgb(hex)[3,]) %>%
-      mutate(contrastColor = case_when((r*0.299 + g*0.587 + b*0.114) > 150 ~ "#000000",
+      mutate(contrastColor = case_when((r*0.299 + g*0.587 + b*0.114) > 140 ~ "#000000",
                                        TRUE ~ "#FFFFFF"))
   }
   )
@@ -207,13 +211,18 @@ server <- function(input, output, session){
   # Plot color blocks -------------------------------------------------------
   output$colorBlocks <- renderPlot({
     rectangleDF() %>%
-      ggplot(aes(x, y))+
-      geom_tile(aes(fill = hex))+ # fill w hex colors
+      ggplot()+
+      geom_rect(aes(xmin = xmin, xmax = xmax,
+                    ymin = ymin, ymax = ymax, 
+                    fill = hex))+ # fill w hex colors
       scale_fill_identity()+ # take the literal hex values as colors, instead of mapping other colors to them.
       theme_void() + # totally blank background
-      geom_text(aes(x = x, y = y-0.4, label = grapheme, 
-                    col = contrastColor))+
+      geom_text(aes(x = xmin + 0.5, y = ymin + 0.3, label = grapheme, 
+                    col = contrastColor),
+                size = 7,
+                family = "Baloo 2")+
       scale_color_identity()
+      
   })
   
   
