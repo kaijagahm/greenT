@@ -242,15 +242,13 @@ server <- function(input, output, session){
                                       size = 7,
                                       family = "Baloo 2")}+
       scale_color_identity()
-      
-
+  })
+  
   # Save selected colors as a csv -------------------------------------------
   # Code here to do that
   relevant_inputs <- c(letters, c("zero", "one", "two", "three", 
                                   "four", "five", "six", "seven", 
-                                  "eight", "nine")) # XXX come back to this.
-    
-  })
+                                  "eight", "nine"))
   
   
   # Plot colored text -------------------------------------------------------
