@@ -90,16 +90,24 @@ ui <- function(request){ # UI as a function to enable bookmarking
     ),
     fluidRow(
       # Text input ---------------------------------------------------------
-      column(width = 9,
+      column(width = 4,
              textInput("displayText", 
                        "Text to display:", 
                        value = "Type something") # initial text in the box
       ),
       
+
+      # Save inputs as csv ------------------------------------------------
+      column(width = 3, offset = 1,
+             br(),
+             downloadButton("downloadColors",
+                            label = "Download colors")
+             ),
+      
       # Bookmark button ----------------------------------------------------
-      column(width = 3,
+      column(width = 3, offset = 1,
              br(), # just so the spacing aligns better with the text entry box
-             bookmarkButton(label = "Save this",
+             bookmarkButton(label = "Save state",
                             icon = shiny::icon("heart-empty", lib = "glyphicon"))
       )
     ),
@@ -235,6 +243,13 @@ server <- function(input, output, session){
                                       family = "Baloo 2")}+
       scale_color_identity()
       
+
+  # Save selected colors as a csv -------------------------------------------
+  # Code here to do that
+  relevant_inputs <- c(letters, c("zero", "one", "two", "three", 
+                                  "four", "five", "six", "seven", 
+                                  "eight", "nine")) # XXX come back to this.
+    
   })
   
   
