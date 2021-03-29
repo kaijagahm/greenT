@@ -244,8 +244,9 @@ server <- function(input, output, session){
   # })
   
   # Plot color blocks -------------------------------------------------------
+  plotVals <- reactiveValues() # initialize a reactiveValues object to store the plot object
   output$colorBlocks <- renderPlot({
-    rectangleDF() %>%
+    p <- rectangleDF() %>%
       ggplot()+
       geom_rect(aes(xmin = xmin, xmax = xmax,
                     ymin = ymin, ymax = ymax, 
@@ -259,6 +260,8 @@ server <- function(input, output, session){
                                       size = 7,
                                       family = "Baloo 2")}+
       scale_color_identity()
+    plotVals$rectanglePlot <- p
+    print(p)
   })
   
   # Save selected colors as a csv -------------------------------------------
@@ -283,6 +286,18 @@ server <- function(input, output, session){
       write.csv(colorsForExport(), file, row.names = FALSE)
     }
   )
+  
+  # Download rectangles plot as image ---------------------------------------
+  output$downloadPlot <- downloadHandler(
+    filename = function(){
+      paste(str_replace_all(split(), " ", "_"), '.svg', sep = '_')
+      },
+    
+    content = function(file){
+      svg(file, width = 7, height = 5)
+      print(plotVals$rectanglePlot)
+      dev.off()
+    })
   
   # Plot colored text -------------------------------------------------------
   output$coloredText <- renderText({
