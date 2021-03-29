@@ -17,6 +17,19 @@ library(shinyWidgets)
 font_add_google("Baloo 2")
 showtext_auto()
 
+kaijaColors <- read.csv(here("data", "kaijaColors.csv")) %>%
+  mutate(character = as.character(fct_recode(character,
+                                             "zero" = "0",
+                                             "nine" = "9",
+                                             "eight" = "8",
+                                             "seven" = "7",
+                                             "six" = "6",
+                                             "five" = "5",
+                                             "four" = "4",
+                                             "three" = "3",
+                                             "two" = "2",
+                                             "one" = "1")))
+
 # UI ----------------------------------------------------------------------
 ui <- function(request){ # UI as a function to enable bookmarking
   fluidPage(
@@ -26,7 +39,7 @@ ui <- function(request){ # UI as a function to enable bookmarking
     tags$head(     
       tags$link(rel = "stylesheet", type = "text/css", href = "tea-style.css"),
       tags$script(src = "custom.js")
-      ),
+    ),
     
     # Title and subtitle, two different formats
     titlePanel(div(HTML("<b>greenT  </b> <em><small>exploring grapheme-color synesthesia</em></small>")),
@@ -49,7 +62,7 @@ ui <- function(request){ # UI as a function to enable bookmarking
                  colourInput("m", "M", value = randomColor()),
                  colourInput("s", "S", value = randomColor()),
                  colourInput("y", "Y", value = randomColor()),
-                 colourInput("five", "5", value = randomColor())), # can't have a digit as a variable name without jumping through hoops
+                 colourInput("five", "5", value = randomColor())), 
           column(width = 2,
                  colourInput("b", "B", value = randomColor()),
                  colourInput("h", "H", value = randomColor()),
@@ -84,7 +97,14 @@ ui <- function(request){ # UI as a function to enable bookmarking
                  colourInput("r", "R", value = randomColor()),
                  colourInput("x", "X", value = randomColor()),
                  colourInput("four", "4", value = randomColor()),
-                 colourInput("zero", "0", value = randomColor()))
+                 colourInput("zero", "0", value = randomColor())),
+          fluidRow(
+            column(width = 11, offset = 1,
+                   checkboxInput("kaijaColors",
+                                 label = "Show Kaija's colors",
+                                 value = F)
+            )
+          )
         )
       )
     ),
@@ -95,14 +115,12 @@ ui <- function(request){ # UI as a function to enable bookmarking
                        "Text to display:", 
                        value = "Type something") # initial text in the box
       ),
-      
-
       # Save inputs as csv ------------------------------------------------
       column(width = 3, offset = 1,
              br(),
              downloadButton("downloadColors",
                             label = "Download colors")
-             ),
+      ),
       
       # Bookmark button ----------------------------------------------------
       column(width = 3, offset = 1,
@@ -178,7 +196,7 @@ server <- function(input, output, session){
   # Save the user-entered color values --------------------------------------
   # Convert the reactiveValues object into a data frame so we can use it more easily.
   colorsDF <- eventReactive(colorsList(), {
-      colorsList() %>%
+    colorsList() %>%
       lapply(., as.data.frame) %>% # convert each element to a df so we will be able to use rbindlist
       rbindlist(idcol = "grapheme") %>% # store list names in a column called "grapheme"
       as.data.frame() %>% # this is in some weird format, so make it a df
@@ -205,7 +223,7 @@ server <- function(input, output, session){
                     split = ""))
   )
   
-
+  
   # Create df input for the ggplot ------------------------------------------
   rectangleDF <- reactive({
     req(length(split()) > 0) # will only work when there is text entered in the box
@@ -225,7 +243,7 @@ server <- function(input, output, session){
   # observeEvent(rectangleDF(), {
   #   browser()
   # })
-
+  
   # Plot color blocks -------------------------------------------------------
   output$colorBlocks <- renderPlot({
     rectangleDF() %>%
@@ -245,16 +263,45 @@ server <- function(input, output, session){
   })
   
   # Save selected colors as a csv -------------------------------------------
-  # Code here to do that
-  relevant_inputs <- c(letters, c("zero", "one", "two", "three", 
-                                  "four", "five", "six", "seven", 
-                                  "eight", "nine"))
+  ## Create the data for export
+  colorsForExport <- reactive({
+    colorsDF() %>%
+      filter(grapheme != " ") %>%
+      rename("character" = grapheme) %>%
+      mutate(red = col2rgb(hex)[1,],
+             green = col2rgb(hex)[2,],
+             blue = col2rgb(hex)[3,])
+  })
   
+  ## Download handler
+  output$downloadColors <- downloadHandler(
+    filename = function() {
+      paste0("colors_", 
+             str_replace(str_remove_all(as.character(Sys.time()), ":|-"), 
+                         " ", "."), ".csv")
+    },
+    content = function(file) {
+      write.csv(colorsForExport(), file, row.names = FALSE)
+    }
+  )
   
   # Plot colored text -------------------------------------------------------
   output$coloredText <- renderText({
     input$displayText
   })
+  
+  
+  # Set Kaija colors --------------------------------------------------------
+  observeEvent(input$kaijaColors, {
+    if(input$kaijaColors){
+      for(i in 1:nrow(kaijaColors)){
+        updateColourInput(session,
+                          inputId = kaijaColors$character[i],
+                          value = kaijaColors$hex[i])
+      }
+    }
+  })
+  
   
 }
 shinyApp(ui, server, enableBookmarking = "url")
