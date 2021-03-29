@@ -99,10 +99,9 @@ ui <- function(request){ # UI as a function to enable bookmarking
                  colourInput("four", "4", value = randomColor()),
                  colourInput("zero", "0", value = randomColor())),
           fluidRow(
-            column(width = 11, offset = 1,
-                   checkboxInput("kaijaColors",
-                                 label = "Show Kaija's colors",
-                                 value = F)
+            column(width = 12,
+                   actionButton("kaijaColors",
+                                "Kaija's colors")
             )
           )
         )
@@ -293,12 +292,10 @@ server <- function(input, output, session){
   
   # Set Kaija colors --------------------------------------------------------
   observeEvent(input$kaijaColors, {
-    if(input$kaijaColors){
-      for(i in 1:nrow(kaijaColors)){
-        updateColourInput(session,
-                          inputId = kaijaColors$character[i],
-                          value = kaijaColors$hex[i])
-      }
+    for(i in 1:nrow(kaijaColors)){
+      updateColourInput(session,
+                        inputId = kaijaColors$character[i],
+                        value = kaijaColors$hex[i])
     }
   })
   
