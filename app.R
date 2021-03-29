@@ -276,8 +276,8 @@ server <- function(input, output, session){
   output$downloadColors <- downloadHandler(
     filename = function() {
       paste0("colors_", 
-             str_replace(str_remove_all(as.character(Sys.time()), ":|-"), 
-                         " ", "."), ".csv")
+             str_replace(str_replace_all(as.character(Sys.time()), ":", "-"), 
+                         " ", "_"), ".csv")
     },
     content = function(file) {
       write.csv(colorsForExport(), file, row.names = FALSE)
