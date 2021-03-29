@@ -124,7 +124,7 @@ ui <- function(request){ # UI as a function to enable bookmarking
       # Bookmark button ----------------------------------------------------
       column(width = 3, offset = 1,
              br(), # just so the spacing aligns better with the text entry box
-             bookmarkButton(label = "Save state",
+             bookmarkButton(label = "Save app state",
                             icon = shiny::icon("heart-empty", lib = "glyphicon"))
       )
     ),
@@ -142,10 +142,14 @@ ui <- function(request){ # UI as a function to enable bookmarking
                  value = TRUE
                ),
                style = "margin-bottom: -10px"),
-               plotOutput("colorBlocks")),
+               plotOutput("colorBlocks"),
+               downloadButton("downloadPlot",
+                              "Download image")
+               ),
       # colored text, rendered with javascript
       tabPanel("Text", 
-               textOutput("coloredText"))
+               textOutput("coloredText")
+               )
     )
   )
 }
@@ -290,13 +294,17 @@ server <- function(input, output, session){
   # Download rectangles plot as image ---------------------------------------
   output$downloadPlot <- downloadHandler(
     filename = function(){
-      paste(str_replace_all(split(), " ", "_"), '.svg', sep = '_')
+      paste0(str_replace_all(tolower(input$displayText),
+                            "[^a-z0-9]", "_") %>% 
+              str_replace_all(., "_{2,}", "_"), 
+            '.pdf')
       },
     
     content = function(file){
-      svg(file, width = 7, height = 5)
-      print(plotVals$rectanglePlot)
-      dev.off()
+      req(plotVals$rectanglePlot)
+      ggsave(file, plot = plotVals$rectanglePlot, 
+             device = 'pdf', width = length(split()), 
+             height = 5)
     })
   
   # Plot colored text -------------------------------------------------------
