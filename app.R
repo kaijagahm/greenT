@@ -297,13 +297,13 @@ server <- function(input, output, session){
       paste0(str_replace_all(tolower(input$displayText),
                             "[^a-z0-9]", "_") %>% 
               str_replace_all(., "_{2,}", "_"), 
-            '.pdf')
+            '.png')
       },
     
     content = function(file){
       req(plotVals$rectanglePlot)
       ggsave(file, plot = plotVals$rectanglePlot, 
-             device = 'pdf', width = length(split()), 
+             device = 'png', width = length(split()), 
              height = 5)
     })
   
