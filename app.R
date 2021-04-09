@@ -29,6 +29,10 @@ kaijaColors <- read.csv(here("data", "kaijaColors.csv")) %>%
                                              "three" = "3",
                                              "two" = "2",
                                              "one" = "1")))
+selectorVals <- c(letters, c("zero", "one", "two", "three", "four", "five", 
+                              "six", "seven", "eight", "nine"))
+selectorNames <- c(LETTERS, 0:9)
+selectors <- setNames(selectorVals, selectorNames)
 
 # UI ----------------------------------------------------------------------
 ui <- function(request){ # UI as a function to enable bookmarking
