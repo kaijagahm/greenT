@@ -1,1 +1,0 @@
-# Custom functions for the greenT app
