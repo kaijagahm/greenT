@@ -10,7 +10,7 @@ library(randomcoloR) # for randomly-generated colors
 library(ggplot2)
 library(shinyBS)
 library(grDevices)
-source(here("functions.R"))
+source(here("defs.R"))
 library(showtext) # for fonts
 library(sysfonts)
 library(shinyWidgets)
@@ -40,42 +40,41 @@ ui <- function(request){ # UI as a function to enable bookmarking
         id = "colorSelectors", open = "setColors",
         # Collapsible panel for the color selectors.
         bsCollapsePanel(
-          # This is a bit of a hack: you're supposed to use this for the title of the panel, but I don't want a panel title. I just want the user to know where to click in order to collapse/open the panel. There is probably a better/cleaner way to do this.
           title = HTML("<em><small>Show/hide selectors</em></small>"), 
-          value = "setColors", # allows us to control when this opens/closes
+          value = "setColors", # allows us to control open/close programmatically, if we want
           column(width = 2,
-                 purrr::map2(.x = c("a", "g", "m", "s", "y", "five"), 
-                             .y = c("A", "G", "M", "S", "Y", "5"), 
+                 purrr::map2(.x = horiz(inputIds)[1:6], 
+                             .y = horiz(displayNames)[1:6], 
                              ~colourInput(.x, .y, value = randomColor(), 
                                          showColour = "background"))
                  ), 
           column(width = 2,
-                 purrr::map2(.x = c("b", "h", "n", "t", "z", "six"), 
-                             .y = c("B", "G", "N", "T", "Z", "6"), 
+                 purrr::map2(.x = horiz(inputIds)[7:12], 
+                             .y = horiz(displayNames)[7:12], 
                              ~colourInput(.x, .y, value = randomColor(), 
                                           showColour = "background"))
                  ),
           column(width = 2,
-                 purrr::map2(.x = c("c", "i", "o", "u", "one", "seven"), 
-                             .y = c("C", "I", "O", "U", "1", "7"), 
+                 purrr::map2(.x = horiz(inputIds)[13:18], 
+                             .y = horiz(displayNames)[13:18], 
                              ~colourInput(.x, .y, value = randomColor(), 
                                           showColour = "background"))
                  ),
           column(width = 2,
-                 purrr::map2(.x = c("d", "j", "p", "v", "two", "eight"), 
-                             .y = c("D", "J", "P", "V", "2", "8"), 
+                 purrr::map2(.x = horiz(inputIds)[19:24], 
+                             .y = horiz(displayNames)[19:24], 
                              ~colourInput(.x, .y, value = randomColor(), 
                                           showColour = "background"))
                 ),
           column(width = 2,
-                 purrr::map2(.x = c("e", "k", "q", "w", "three", "nine"), 
-                             .y = c("E", "K", "Q", "W", "3", "9"), 
+                 purrr::map2(.x = horiz(inputIds)[25:30], 
+                             .y = horiz(displayNames)[25:30], 
                              ~colourInput(.x, .y, value = randomColor(), 
                                           showColour = "background"))
                  ),
           column(width = 2,
-                 purrr::map2(.x = c("f", "l", "r", "x", "four", "zero"), 
-                             .y = c("F", "L", "R", "X", "4", "0"), 
+                 purrr::map2(.x = horiz(inputIds)[31:36], 
+                             .y = horiz(displayNames)[31:36], 
                              ~colourInput(.x, .y, value = randomColor(), 
                                           showColour = "background"))
                  ),

@@ -13,3 +13,10 @@ charactersOut <- tolower(displayNames)
 kaijaColors <- read.csv(here("data", "kaijaColors.csv")) %>%
   mutate(character = as.character(fct_recode(character,
                                              !!! setNames(charactersOut, inputIds))))
+
+# Function to reorganize the inputs horizontally --------------------------
+horiz <- function(vec = inputIds, nrow = 6, ncol = 6){
+  mat <- matrix(vec, nrow = nrow, ncol = ncol, byrow = T)
+  horizVec <- c(mat)
+  return(horizVec)
+}
