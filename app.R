@@ -216,7 +216,8 @@ server <- function(input, output, session){
                                             "8" = "eight",
                                             "9" = "nine",
                                             "0" = "zero"))
-  })
+  }) %>%
+    debounce(25)
   
   # Convert input to lowercase, replace all non-alphanumeric characters with a blank space, and split the string into a vector
   split <- reactive( 
@@ -250,8 +251,9 @@ server <- function(input, output, session){
   # Plot color blocks -------------------------------------------------------
   plotVals <- reactiveValues() # initialize a reactiveValues object to store the plot object
   output$colorBlocks <- renderPlot({
-    p <- rectangleDF() %>%
-      ggplot()+
+    
+    p <-  rectangleDF() %>%
+      ggplot() +
       geom_rect(aes(xmin = xmin, xmax = xmax,
                     ymin = ymin, ymax = ymax, 
                     fill = hex))+ # fill w hex colors
