@@ -101,7 +101,9 @@ ui <- function(request){ # UI as a function to enable bookmarking
           fluidRow(
             column(width = 12,
                    actionButton("kaijaColors",
-                                "Kaija's colors")
+                                "Kaija's colors"),
+                   actionButton("allWhite",
+                                "Set colors to white")
             )
           )
         )
@@ -321,6 +323,14 @@ server <- function(input, output, session){
       updateColourInput(session,
                         inputId = kaijaColors$character[i],
                         value = kaijaColors$hex[i])
+    }
+  })
+  
+  observeEvent(input$allWhite, {
+    for(i in 1:nrow(kaijaColors)){
+      updateColourInput(session,
+                        inputId = kaijaColors$character[i],
+                        value = "#FFFFFF")
     }
   })
   
