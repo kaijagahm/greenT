@@ -103,7 +103,7 @@ ui <- function(request){ # UI as a function to enable bookmarking
                    actionButton("kaijaColors",
                                 "Kaija's colors"),
                    actionButton("allWhite",
-                                "Set colors to white")
+                                "Set all to white")
             )
           )
         )
@@ -329,7 +329,7 @@ server <- function(input, output, session){
   observeEvent(input$allWhite, {
     for(i in 1:nrow(kaijaColors)){
       updateColourInput(session,
-                        inputId = kaijaColors$character[i],
+                        inputId = kaijaColors$character[i], # XXX there's a better way to refer to this.
                         value = "#FFFFFF")
     }
   })
