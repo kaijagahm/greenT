@@ -132,7 +132,7 @@ ui <- function(request){ # UI as a function to enable bookmarking
 
 server <- function(input, output, session){
   # Save the user-entered color values --------------------------------------
-  colorsList <- reactive({
+  colorsList <- reactive({ # XXX there has to be a better way to do this, using the vectors I created, but I can't figure out how.
     list("space" = "#FFFFFF",
          "a" = input$a,
          "b" = input$b,
