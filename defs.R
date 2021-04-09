@@ -20,3 +20,9 @@ horiz <- function(vec = inputIds, nrow = 6, ncol = 6){
   horizVec <- c(mat)
   return(horizVec)
 }
+
+
+# Function to create inputs -----------------------------------------------
+colorInit <- function(x = .x, y = .y){
+  colourInput(x, y, value = randomColor(), showColour = "background")
+}

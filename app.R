@@ -45,38 +45,32 @@ ui <- function(request){ # UI as a function to enable bookmarking
           column(width = 2,
                  purrr::map2(.x = horiz(inputIds)[1:6], 
                              .y = horiz(displayNames)[1:6], 
-                             ~colourInput(.x, .y, value = randomColor(), 
-                                         showColour = "background"))
+                             colorInit)
                  ), 
           column(width = 2,
                  purrr::map2(.x = horiz(inputIds)[7:12], 
                              .y = horiz(displayNames)[7:12], 
-                             ~colourInput(.x, .y, value = randomColor(), 
-                                          showColour = "background"))
+                             colorInit)
                  ),
           column(width = 2,
                  purrr::map2(.x = horiz(inputIds)[13:18], 
                              .y = horiz(displayNames)[13:18], 
-                             ~colourInput(.x, .y, value = randomColor(), 
-                                          showColour = "background"))
+                             colorInit)
                  ),
           column(width = 2,
                  purrr::map2(.x = horiz(inputIds)[19:24], 
                              .y = horiz(displayNames)[19:24], 
-                             ~colourInput(.x, .y, value = randomColor(), 
-                                          showColour = "background"))
+                             colorInit)
                 ),
           column(width = 2,
                  purrr::map2(.x = horiz(inputIds)[25:30], 
                              .y = horiz(displayNames)[25:30], 
-                             ~colourInput(.x, .y, value = randomColor(), 
-                                          showColour = "background"))
+                             colorInit)
                  ),
           column(width = 2,
                  purrr::map2(.x = horiz(inputIds)[31:36], 
                              .y = horiz(displayNames)[31:36], 
-                             ~colourInput(.x, .y, value = randomColor(), 
-                                          showColour = "background"))
+                             colorInit)
                  ),
           fluidRow(
             column(width = 12,
