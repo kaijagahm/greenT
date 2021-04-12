@@ -152,13 +152,17 @@ ui <- function(request){ # UI as a function to enable bookmarking
             column(width = 10,
                    offset = 1,
                    h2("Contributors"),
+                   h4(strong("Kaija")),
+                   p("I'm a biologist, soon-to-be PhD student in behavioral ecology, and R programmer by day. Though I've been working in R for years, I started learning Shiny just last summer, and I'm using this app as a way to build skills. You can see more of my work on ", a(href = 'https://github.com/kaijagahm', "GitHub", .noWS = "outside"), " and I write about R and my research projects on ", a(href = 'https://kaijagahm.netlify.app', "my website", .noWS = "outside"), ". When I'm not coding or telling my friends about synesthesia, you can find me hiking, knitting a sweater, or cooking something yummy.",
+                     #style = "font-size:500px;" # commenting this out for now--not sure what to do about sizes yet.
+                     ),
+                   h4(strong("Jonathan")),
                    p("I developed this app in partnership with Jonathan Trattner. Jonathan doesn't have synesthesia, but he's a talented programmer and Shiny developer. He's written several Shiny-related packages of his own, and he has deeper experience with Shiny, Javascript, CSS, and HTML than I do. Fittingly, he's also a neuroscience major. We met in the wonderful ", 
                      a(href = 'https://www.rfordatasci.com/', "R for Data Science", 
                        .noWS = "outside"), " Slack channel, when he helped me out with another app I was working on. You can see more of Jonathan's work at his ", 
                      a(href = 'https://www.jdtrat.com/', "website",
                        .noWS = "outside"), ".",
-                     .noWS = c("after-begin", "before-end")),
-                   p("")
+                     .noWS = c("after-begin", "before-end"))
             )
           ),
           fluidRow(
