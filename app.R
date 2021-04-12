@@ -43,6 +43,7 @@ ui <- function(request){ # UI as a function to enable bookmarking
           title = HTML("<em><small>Show/hide selectors</em></small>"), 
           value = "setColors", # allows us to control open/close programmatically, if we want
           column(width = 2,
+                 # See defs.R for the horiz() function--basically it converts a vector to a matrix and back again, to allow us to arrange the alphabet by rows instead of columns
                  purrr::map2(.x = horiz(inputIds)[1:6], 
                              .y = horiz(displayNames)[1:6], 
                              colorInit)
