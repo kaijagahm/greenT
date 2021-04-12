@@ -46,32 +46,32 @@ ui <- function(request){ # UI as a function to enable bookmarking
                  purrr::map2(.x = horiz(inputIds)[1:6], 
                              .y = horiz(displayNames)[1:6], 
                              colorInit)
-                 ), 
+          ), 
           column(width = 2,
                  purrr::map2(.x = horiz(inputIds)[7:12], 
                              .y = horiz(displayNames)[7:12], 
                              colorInit)
-                 ),
+          ),
           column(width = 2,
                  purrr::map2(.x = horiz(inputIds)[13:18], 
                              .y = horiz(displayNames)[13:18], 
                              colorInit)
-                 ),
+          ),
           column(width = 2,
                  purrr::map2(.x = horiz(inputIds)[19:24], 
                              .y = horiz(displayNames)[19:24], 
                              colorInit)
-                ),
+          ),
           column(width = 2,
                  purrr::map2(.x = horiz(inputIds)[25:30], 
                              .y = horiz(displayNames)[25:30], 
                              colorInit)
-                 ),
+          ),
           column(width = 2,
                  purrr::map2(.x = horiz(inputIds)[31:36], 
                              .y = horiz(displayNames)[31:36], 
                              colorInit)
-                 ),
+          ),
           fluidRow(
             column(width = 12,
                    actionButton("kaijaColors",
@@ -121,79 +121,35 @@ ui <- function(request){ # UI as a function to enable bookmarking
                plotOutput("colorBlocks"),
                downloadButton("downloadPlot",
                               "Download image")
-               ),
+      ),
       # colored text, rendered with javascript
       tabPanel("Text", 
                textOutput("coloredText")
-               )
+      )
     )
   )
 }
 
 server <- function(input, output, session){
   # Save the user-entered color values --------------------------------------
-  colorsList <- reactive({ # XXX there has to be a better way to do this, using the vectors I created, but I can't figure out how.
-    list("space" = "#FFFFFF",
-         "a" = input$a,
-         "b" = input$b,
-         "c" = input$c,
-         "d" = input$d,
-         "e" = input$e,
-         "f" = input$f,
-         "g" = input$g,
-         "h" = input$h,
-         "i" = input$i,
-         "j" = input$j,
-         "k" = input$k,
-         "l" = input$l,
-         "m" = input$m,
-         "n" = input$n,
-         "o" = input$o,
-         "p" = input$p,
-         "q" = input$q,
-         "r" = input$r,
-         "s" = input$s,
-         "t" = input$t,
-         "u" = input$u,
-         "v" = input$v,
-         "w" = input$w,
-         "x" = input$x,
-         "y" = input$y,
-         "z" = input$z,
-         "one" = input$one,
-         "two" = input$two,
-         "three" = input$three,
-         "four" = input$four,
-         "five" = input$five,
-         "six" = input$six,
-         "seven" = input$seven,
-         "eight" = input$eight,
-         "nine" = input$nine,
-         "zero" = input$zero)
-  })
-  
-  # Save the user-entered color values --------------------------------------
-  # Convert the reactiveValues object into a data frame so we can use it more easily.
-  colorsDF <- eventReactive(colorsList(), {
-    colorsList() %>%
-      lapply(., as.data.frame) %>% # convert each element to a df so we will be able to use rbindlist
-      rbindlist(idcol = "grapheme") %>% # store list names in a column called "grapheme"
-      as.data.frame() %>% # this is in some weird format, so make it a df
-      rename("hex" = "X[[i]]") %>% # change default name to "hex" bc duh.
-      mutate(grapheme = forcats::fct_recode(grapheme, # have to change these to allow the join to work
-                                            " " = "space",
-                                            "1" = "one",
-                                            "2" = "two",
-                                            "3" = "three",
-                                            "4" = "four",
-                                            "5" = "five",
-                                            "6" = "six",
-                                            "7" = "seven",
-                                            "8" = "eight",
-                                            "9" = "nine",
-                                            "0" = "zero"))
+  colorsDF <- reactive({
+    lapply(inputIds, function(x) {
+      data.frame("grapheme" = x, 
+                 "hex" = input[[x]])
+    }) %>%
+      data.table::rbindlist() %>%
+      as.data.frame() %>%
+      add_row(grapheme = "space", hex = "#FFFFFF") %>%
+      mutate(grapheme = fct_recode(grapheme,
+                                   !!! setNames(inputIds, charactersOut)),
+             grapheme = fct_recode(grapheme,
+                                   " " = "space"))
   }) %>%
     debounce(25)
+  
+  # observeEvent(colorsDF(),{
+  #   browser()
+  # })
   
   # Convert input to lowercase, replace all non-alphanumeric characters with a blank space, and split the string into a vector
   split <- reactive( 
@@ -211,23 +167,17 @@ server <- function(input, output, session){
                ymin = 1,
                ymax = 5) %>%
       mutate(xmin = 1:nrow(.), xmax = 2:(nrow(.)+1)) %>%
-      left_join(colorsDF(), by = c("grapheme")) %>%
+      left_join(colorsDF(), by = "grapheme") %>%
       mutate(r = col2rgb(hex)[1,],
              g = col2rgb(hex)[2,],
              b = col2rgb(hex)[3,]) %>%
       mutate(contrastColor = case_when((r*0.299 + g*0.587 + b*0.114) > 140 ~ "#000000",
                                        TRUE ~ "#FFFFFF"))
-  }
-  )
-  
-  # observeEvent(rectangleDF(), {
-  #   browser()
-  # })
+  })
   
   # Plot color blocks -------------------------------------------------------
   plotVals <- reactiveValues() # initialize a reactiveValues object to store the plot object
   output$colorBlocks <- renderPlot({
-    
     p <-  rectangleDF() %>%
       ggplot() +
       geom_rect(aes(xmin = xmin, xmax = xmax,
@@ -273,10 +223,10 @@ server <- function(input, output, session){
   output$downloadPlot <- downloadHandler(
     filename = function(){
       paste0(str_replace_all(tolower(input$displayText),
-                            "[^a-z0-9]", "_") %>% 
-              str_replace_all(., "_{2,}", "_"), 
-            '.png')
-      },
+                             "[^a-z0-9]", "_") %>% 
+               str_replace_all(., "_{2,}", "_"), 
+             '.png')
+    },
     
     content = function(file){
       req(plotVals$rectanglePlot)
@@ -293,21 +243,17 @@ server <- function(input, output, session){
   
   # Set Kaija colors --------------------------------------------------------
   observeEvent(input$kaijaColors, {
-    for(i in 1:nrow(kaijaColors)){
-      updateColourInput(session,
-                        inputId = kaijaColors$character[i],
-                        value = kaijaColors$hex[i])
-    }
+    purrr::map2(.x = kaijaColors$character,
+                .y = kaijaColors$hex,
+                ~updateColourInput(session, inputId = .x, value = .y))
   })
   
   observeEvent(input$allWhite, {
-    for(i in 1:nrow(kaijaColors)){
+    lapply(inputIds, function(x){
       updateColourInput(session,
-                        inputId = kaijaColors$character[i], # XXX there's a better way to refer to this.
+                        inputId = x,
                         value = "#FFFFFF")
-    }
+    })
   })
-  
-  
 }
 shinyApp(ui, server, enableBookmarking = "url")
