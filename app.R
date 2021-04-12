@@ -95,7 +95,9 @@ ui <- function(request){ # UI as a function to enable bookmarking
       column(width = 3, offset = 1,
              br(),
              downloadButton("downloadColors",
-                            label = "Download colors")
+                            label = "Download colors as .csv"),
+             downloadButton("downloadPlot",
+                            "Download rectangles as .png")
       ),
       
       # Bookmark button ----------------------------------------------------
@@ -119,9 +121,7 @@ ui <- function(request){ # UI as a function to enable bookmarking
                  value = TRUE
                ),
                style = "margin-bottom: -10px"),
-               plotOutput("colorBlocks"),
-               downloadButton("downloadPlot",
-                              "Download image")
+               plotOutput("colorBlocks")
       ),
       # colored text, rendered with javascript
       tabPanel("Text", 
