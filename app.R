@@ -161,7 +161,41 @@ ui <- function(request){ # UI as a function to enable bookmarking
           fluidRow(
             column(width = 10,
                    offset = 1,
-                   howToContribute
+                   howToContribute,
+                   div(
+                     id = "contributeForm",
+                     textInput("name", "Name (this will be used to keep track of responses for data analysis only, and will not be included in public datasets or published/posted analyses. You can use an alias if you prefer.)", "", width = "100%"),
+                     textInput("email", "Email address, if you don't mind being contacted with questions about your experience of synesthesia (optional!)", "", width = "100%"),
+                     numericInput("birthYear", "Birth year", 
+                                  min = 1900, max = year(Sys.Date()),
+                                  value = "", step = 1, width = "100%"),
+                     checkboxGroupInput("handedness", 
+                                        "Are you right-handed or left-handed?",
+                                        choices = c("left", "right", 
+                                                    "ambidextrous", "prefer not to say"), width = "100%"),
+                     checkboxGroupInput("gender", "What is your gender identity?",
+                                        choices = c("woman", "non-binary", 
+                                                    "man", "prefer not to say", 
+                                                    "prefer to self-describe"), width = "100%"),
+                     checkboxGroupInput("sex", "Sex assigned at birth:",
+                                        choices = c("female", "male", "intersex", 
+                                                    "prefer not to say"), width = "100%"),
+                     checkboxGroupInput("strong", "How strong are your color associations?",
+                                        choices = c("very strong", "moderately strong", "neither strong nor weak", "moderately weak", "very weak"), width = "100%"),
+                     checkboxGroupInput("consistent", "How consistent are your color associations?",
+                                        choices = c("very consistent", "mostly consistent", "pretty variable", "extremely variable"), width = "100%"),
+                     checkboxGroupInput("synesthesia", "Do you consider yourself to have grapheme-color synesthesia?",
+                                        choices = c("yes", "no", "not sure"), width = "100%"),
+                     checkboxGroupInput("howLong", "How long have you had color-grapheme associations?", 
+                                        choices = c("as long as I can remember", "a long time, but I can remember not having them", "they developed more recently", "I don't have consistent color-grapheme associations"), width = "100%"),
+                     checkboxGroupInput("family", "Do any of your family members also have grapheme-color associations?",
+                                        choices = c("yes, more than one family member", "yes, one family member", "not that I know of"), width = "100%"),
+                     checkboxGroupInput("otherSynesthesia", "Do you experience other types of synesthesia beyond grapheme-color?", choices = c("yes", "no", "not sure"), width = "100%"),
+                     textInput("comments", "Any comments?", "", width = "100%"),
+                     strong("Consent and submit"),
+                     checkboxInput("consent", "I agree to submit the information I have provided, and the colors I selected, to Kaija Gahm (kaija.gahm@gmail.com) for informal analysis. I understand that my data may be used in blog posts, informal analyses, etc., but my name and email will not be attached. If I provided an email address, I understand that I may be contacted about my responses, but that my email address will not be made public.", width = "100%"),
+                     actionButton("submit", "Submit colors", class = "btn-primary")
+                   )
             )
           )
         )
