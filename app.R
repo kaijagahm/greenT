@@ -305,5 +305,7 @@ server <- function(input, output, session){
                         value = "#FFFFFF")
     })
   })
+  
+  setBookmarkExclude(c("kaijaColors", "allWhite"))
 }
 shinyApp(ui, server, enableBookmarking = "url")
