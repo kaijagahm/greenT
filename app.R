@@ -17,6 +17,7 @@ library(shinyWidgets)
 font_add_google("Baloo 2")
 showtext_auto()
 source("about.R")
+source("contribute.R")
 
 # UI ----------------------------------------------------------------------
 ui <- function(request){ # UI as a function to enable bookmarking
@@ -140,7 +141,7 @@ ui <- function(request){ # UI as a function to enable bookmarking
             column(width = 10,
                    offset = 1,
                    whyThisApp # see about.R
-                   )
+            )
           ),
           fluidRow(
             column(width = 10,
@@ -156,7 +157,13 @@ ui <- function(request){ # UI as a function to enable bookmarking
           )
         ),
         tabPanel(
-          title = "Contribute your colors"
+          title = "Contribute your colors",
+          fluidRow(
+            column(width = 10,
+                   offset = 1,
+                   howToContribute
+            )
+          )
         )
       )
     )
@@ -275,12 +282,16 @@ server <- function(input, output, session){
   
   
   # Set Kaija colors --------------------------------------------------------
+  # In case people want to see the colors as I see them
   observeEvent(input$kaijaColors, {
     purrr::map2(.x = kaijaColors$character,
                 .y = kaijaColors$hex,
                 ~updateColourInput(session, inputId = .x, value = .y))
   })
   
+  
+  # Set all to white --------------------------------------------------------
+  # Useful if people find it easier to input their colors when all the selectors start white, instead of replacing existing colors. 
   observeEvent(input$allWhite, {
     lapply(inputIds, function(x){
       updateColourInput(session,
@@ -289,6 +300,7 @@ server <- function(input, output, session){
     })
   })
   
+  # Exclude the two buttons from bookmarking so that the observeEvent's won't fire. Could also do this with ignoreInit = T in each observeEvent, but we decided this was cleaner.
   setBookmarkExclude(c("kaijaColors", "allWhite"))
 }
 shinyApp(ui, server, enableBookmarking = "url")
