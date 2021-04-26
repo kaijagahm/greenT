@@ -14,6 +14,7 @@ source(here("defs.R"))
 library(showtext) # for fonts
 library(sysfonts)
 library(shinyWidgets)
+library(shinyjs) # for the contribution form
 font_add_google("Baloo 2")
 showtext_auto()
 source("about.R")
@@ -21,8 +22,8 @@ source("contribute.R")
 
 # UI ----------------------------------------------------------------------
 ui <- function(request){ # UI as a function to enable bookmarking
+  shinyjs::useShinyjs() # allow shinyjs
   fluidPage(
-    
     # Change the font for the whole app -----------------------------------
     ## white is already the default background color; leaving this here in case want to change it later.
     tags$head(     
@@ -162,6 +163,8 @@ ui <- function(request){ # UI as a function to enable bookmarking
             column(width = 10,
                    offset = 1,
                    howToContribute,
+                   
+                   # Contribution form --------------------------------------
                    div(
                      id = "contributeForm",
                      textInput("name", "Name (this will be used to keep track of responses for data analysis only, and will not be included in public datasets or published/posted analyses. You can use an alias if you prefer.)", "", width = "100%"),
@@ -177,6 +180,7 @@ ui <- function(request){ # UI as a function to enable bookmarking
                                         choices = c("woman", "non-binary", 
                                                     "man", "prefer not to say", 
                                                     "prefer to self-describe"), width = "100%"),
+                     uiOutput("genderSelfDescribe"),
                      checkboxGroupInput("sex", "Sex assigned at birth:",
                                         choices = c("female", "male", "intersex", 
                                                     "prefer not to say"), width = "100%"),
@@ -190,11 +194,13 @@ ui <- function(request){ # UI as a function to enable bookmarking
                                         choices = c("as long as I can remember", "a long time, but I can remember not having them", "they developed more recently", "I don't have consistent color-grapheme associations"), width = "100%"),
                      checkboxGroupInput("family", "Do any of your family members also have grapheme-color associations?",
                                         choices = c("yes, more than one family member", "yes, one family member", "not that I know of"), width = "100%"),
-                     checkboxGroupInput("otherSynesthesia", "Do you experience other types of synesthesia beyond grapheme-color?", choices = c("yes", "no", "not sure"), width = "100%"),
+                     checkboxGroupInput("synesthesiaTypes", "Do you experience other types of synesthesia beyond grapheme-color? Select all that apply.", choices = c("ordinal linguistic personification (sequences such as numbers, letters, days, months, etc. have genders/personalities)", "chromesthesia (sounds have associated colors)", "spatial sequence synesthesia (sequences such as numbers, letters, days, months, etc. have particular arrangements in space)", "mirror-touch synesthesia (seeing someone else feel a physical sensation and feeling the same sensation yourself)", "auditory-tactile synesthesia (hearing sounds causes physical sensations)", "number form synesthesia (groups of numbers have a mental map/spatial arrangement)", "lexical-gustatory synesthesia (words have associated tastes, smells, textures, etc.)", "sound-gustatory synesthesia (sounds have associated tastes, smells, textures, etc.)", "no other types of synesthesia", "other"), width = "100%"),
+                     uiOutput("otherSynesthesia"),
                      textInput("comments", "Any comments?", "", width = "100%"),
                      strong("Consent and submit"),
-                     checkboxInput("consent", "I agree to submit the information I have provided, and the colors I selected, to Kaija Gahm (kaija.gahm@gmail.com) for informal analysis. I understand that my data may be used in blog posts, informal analyses, etc., but my name and email will not be attached. If I provided an email address, I understand that I may be contacted about my responses, but that my email address will not be made public.", width = "100%"),
-                     actionButton("submit", "Submit colors", class = "btn-primary")
+                     checkboxInput("consent", "I agree to submit the information I have provided, and the colors I selected, to Kaija Gahm (kaija.gahm@gmail.com). I understand that my data may be used in blog posts, informal analyses, etc., but my name and email will not be attached. If I provided an email address, I understand that I may be contacted about my responses, but my email address will not be made public.", width = "100%"),
+                     actionButton("submit", "Submit", class = "btn-primary"),
+                     br()
                    )
             )
           )
@@ -336,5 +342,31 @@ server <- function(input, output, session){
   
   # Exclude the two buttons from bookmarking so that the observeEvent's won't fire. Could also do this with ignoreInit = T in each observeEvent, but we decided this was cleaner.
   setBookmarkExclude(c("kaijaColors", "allWhite"))
+  
+  
+  # Contribute form -------------------------------------------------------
+  # Dynamic options
+  ## self-describe gender
+  output$genderSelfDescribe <- renderUI({
+    req(input$gender)
+    if(!input$gender == "prefer to self-describe"){
+      return(NULL)
+    }else{
+      textInput("genderSelfDescribe", 
+                label = NULL, "")
+    }
+  })
+  
+  ## describe other types of synesthesia
+  output$otherSynesthesia <- renderUI({
+    req(input$synesthesiaTypes)
+    if(!input$synesthesiaTypes == "other"){
+      return(NULL)
+    }else{
+      textInput("otherSynesthesia", 
+                label = NULL, "")
+    }
+  })
+  
 }
 shinyApp(ui, server, enableBookmarking = "url")

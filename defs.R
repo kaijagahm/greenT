@@ -25,3 +25,7 @@ horiz <- function(vec = inputIds, nrow = 6, ncol = 6){
 colorInit <- function(x = .x, y = .y){
   colourInput(x, y, value = randomColor(), showColour = "background")
 }
+
+# Mandatory fields for contribution form ----------------------------------
+fieldsMandatory <- c("name", "handedness", "gender", "sex", "synesthesia", "consent")
+
