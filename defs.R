@@ -23,9 +23,36 @@ horiz <- function(vec = inputIds, nrow = 6, ncol = 6){
 
 # Function to create inputs -----------------------------------------------
 colorInit <- function(x = .x, y = .y){
-  colourInput(x, y, value = randomColor(), showColour = "background")
+  colourpicker::colourInput(x, y, value = randomColor(), showColour = "background")
 }
 
 # Mandatory fields for contribution form ----------------------------------
 fieldsMandatory <- c("name", "handedness", "gender", "sex", "synesthesia", "consent")
+labelMandatory <- function(label) {
+  tagList(
+    label,
+    span("*", class = "mandatory_star")
+  )
+}
+
+fieldsAll <- c("name", "email", "birthYear", "handedness", "gender", "genderSelfDescribe", "sex", "strong", "consistent", "synesthesia", "howLong", "family", "synesthesiaTypes", "otherSynesthesia", "comments", "consent")
+
+# dateTimeFormat ----------------------------------------------------------
+dateTimeFormat <- function(){
+  dateTime <- str_replace(str_replace_all(as.character(Sys.time()), 
+                              ":", "-"), 
+              " ", "_")
+  
+  return(dateTime)
+}
+
+# Function to save form data ----------------------------------------------
+saveData <- function(data) {
+  fileName <- sprintf("%s_%s.csv",
+                      dateTimeFormat(),
+                      digest::digest(data))
+  
+  write.csv(x = data, file = file.path("responses", fileName),
+            row.names = FALSE, quote = TRUE)
+}
 

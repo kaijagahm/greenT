@@ -1,7 +1,7 @@
 library(shiny) # duh
+library(shinyjs) # for the contribution form
 library(colourpicker) # for color inputs
-library(dplyr) # because i like pipes
-library(stringr) # for dealing with text
+library(tidyverse)
 # Some random change to the code.
 library(data.table) # for binding the list into a data frame
 library(forcats) # for dealing with factor recoding
@@ -14,7 +14,6 @@ source(here("defs.R"))
 library(showtext) # for fonts
 library(sysfonts)
 library(shinyWidgets)
-library(shinyjs) # for the contribution form
 font_add_google("Baloo 2")
 showtext_auto()
 source("about.R")
@@ -22,8 +21,8 @@ source("contribute.R")
 
 # UI ----------------------------------------------------------------------
 ui <- function(request){ # UI as a function to enable bookmarking
-  shinyjs::useShinyjs() # allow shinyjs
   fluidPage(
+    shinyjs::useShinyjs(), # allow shinyjs
     # Change the font for the whole app -----------------------------------
     ## white is already the default background color; leaving this here in case want to change it later.
     tags$head(     
@@ -167,41 +166,71 @@ ui <- function(request){ # UI as a function to enable bookmarking
                    # Contribution form --------------------------------------
                    div(
                      id = "contributeForm",
-                     textInput("name", "Name (this will be used to keep track of responses for data analysis only, and will not be included in public datasets or published/posted analyses. You can use an alias if you prefer.)", "", width = "100%"),
-                     textInput("email", "Email address, if you don't mind being contacted with questions about your experience of synesthesia (optional!)", "", width = "100%"),
+                     textInput("name", 
+                               labelMandatory("Name (this will be used to keep track of responses for data analysis only, and will not be included in public datasets or published/posted analyses. You can use an alias if you prefer.)"), 
+                               "", width = "100%"),
+                     textInput("email", 
+                               "Email address, if you don't mind being contacted with questions about your experience of synesthesia (optional!)", 
+                               "", width = "100%"),
                      numericInput("birthYear", "Birth year", 
                                   min = 1900, max = year(Sys.Date()),
-                                  value = "", step = 1, width = "100%"),
-                     checkboxGroupInput("handedness", 
-                                        "Are you right-handed or left-handed?",
+                                  value = "", step = 1),
+                     radioButtons("handedness", 
+                                        labelMandatory("Are you right-handed or left-handed?"),
                                         choices = c("left", "right", 
-                                                    "ambidextrous", "prefer not to say"), width = "100%"),
-                     checkboxGroupInput("gender", "What is your gender identity?",
+                                                    "ambidextrous", "prefer not to say"), 
+                                  selected = character(0), width = "100%"),
+                     radioButtons("gender", labelMandatory("What is your gender identity?"),
                                         choices = c("woman", "non-binary", 
                                                     "man", "prefer not to say", 
-                                                    "prefer to self-describe"), width = "100%"),
+                                                    "prefer to self-describe"), 
+                                  selected = character(0), width = "100%"),
                      uiOutput("genderSelfDescribe"),
-                     checkboxGroupInput("sex", "Sex assigned at birth:",
+                     radioButtons("sex", labelMandatory("Sex assigned at birth:"),
                                         choices = c("female", "male", "intersex", 
-                                                    "prefer not to say"), width = "100%"),
-                     checkboxGroupInput("strong", "How strong are your color associations?",
-                                        choices = c("very strong", "moderately strong", "neither strong nor weak", "moderately weak", "very weak"), width = "100%"),
-                     checkboxGroupInput("consistent", "How consistent are your color associations?",
-                                        choices = c("very consistent", "mostly consistent", "pretty variable", "extremely variable"), width = "100%"),
-                     checkboxGroupInput("synesthesia", "Do you consider yourself to have grapheme-color synesthesia?",
-                                        choices = c("yes", "no", "not sure"), width = "100%"),
-                     checkboxGroupInput("howLong", "How long have you had color-grapheme associations?", 
-                                        choices = c("as long as I can remember", "a long time, but I can remember not having them", "they developed more recently", "I don't have consistent color-grapheme associations"), width = "100%"),
-                     checkboxGroupInput("family", "Do any of your family members also have grapheme-color associations?",
-                                        choices = c("yes, more than one family member", "yes, one family member", "not that I know of"), width = "100%"),
-                     checkboxGroupInput("synesthesiaTypes", "Do you experience other types of synesthesia beyond grapheme-color? Select all that apply.", choices = c("ordinal linguistic personification (sequences such as numbers, letters, days, months, etc. have genders/personalities)", "chromesthesia (sounds have associated colors)", "spatial sequence synesthesia (sequences such as numbers, letters, days, months, etc. have particular arrangements in space)", "mirror-touch synesthesia (seeing someone else feel a physical sensation and feeling the same sensation yourself)", "auditory-tactile synesthesia (hearing sounds causes physical sensations)", "number form synesthesia (groups of numbers have a mental map/spatial arrangement)", "lexical-gustatory synesthesia (words have associated tastes, smells, textures, etc.)", "sound-gustatory synesthesia (sounds have associated tastes, smells, textures, etc.)", "no other types of synesthesia", "other"), width = "100%"),
+                                                    "prefer not to say"), 
+                                  selected = character(0), width = "100%"),
+                     radioButtons("strong", "How strong are your color associations?",
+                                        choices = c("very strong", "moderately strong", 
+                                                    "neither strong nor weak", "moderately weak", 
+                                                    "very weak"), 
+                                  selected = character(0), width = "100%"),
+                     radioButtons("consistent", "How consistent are your color associations?",
+                                        choices = c("very consistent", "mostly consistent", 
+                                                    "pretty variable", "extremely variable"), 
+                                  selected = character(0), width = "100%"),
+                     radioButtons("synesthesia", labelMandatory("Do you consider yourself to have grapheme-color synesthesia?"),
+                                        choices = c("yes", "no", "not sure"), 
+                                  selected = character(0), width = "100%"),
+                     radioButtons("howLong", "How long have you had color-grapheme associations?", 
+                                        choices = c("as long as I can remember", "a long time, but I can remember not having them", "they developed more recently", "I don't have consistent color-grapheme associations"), 
+                                  selected = character(0), width = "100%"),
+                     radioButtons("family", "Do any of your family members also have grapheme-color associations?",
+                                        choices = c("yes, more than one family member", "yes, one family member", "not that I know of"),
+                                  selected = character(0), width = "100%"),
+                     checkboxGroupInput("synesthesiaTypes", "Do you experience other types of synesthesia beyond grapheme-color? Select all that apply.", choices = c("ordinal linguistic personification (sequences such as numbers, letters, days, months, etc. have genders/personalities)", "chromesthesia (sounds have associated colors)", "spatial sequence synesthesia (sequences such as numbers, letters, days, months, etc. have particular arrangements in space)", "mirror-touch synesthesia (seeing someone else feel a physical sensation and feeling the same sensation yourself)", "auditory-tactile synesthesia (hearing sounds causes physical sensations)", "number form synesthesia (groups of numbers have a mental map/spatial arrangement)", "lexical-gustatory synesthesia (words have associated tastes, smells, textures, etc.)", "sound-gustatory synesthesia (sounds have associated tastes, smells, textures, etc.)", "no other types of synesthesia", "other"),
+                                        selected = character(0), width = "100%"),
                      uiOutput("otherSynesthesia"),
                      textInput("comments", "Any comments?", "", width = "100%"),
                      strong("Consent and submit"),
-                     checkboxInput("consent", "I agree to submit the information I have provided, and the colors I selected, to Kaija Gahm (kaija.gahm@gmail.com). I understand that my data may be used in blog posts, informal analyses, etc., but my name and email will not be attached. If I provided an email address, I understand that I may be contacted about my responses, but my email address will not be made public.", width = "100%"),
+                     checkboxInput("consent", labelMandatory("I agree to submit the information I have provided, and the colors I selected, to Kaija Gahm (kaija.gahm@gmail.com). I understand that my data may be used in blog posts, informal analyses, etc., but my name and email will not be attached. If I provided an email address, I understand that I may be contacted about my responses, but my email address will not be made public."), width = "100%"),
                      actionButton("submit", "Submit", class = "btn-primary"),
-                     br()
-                   )
+                     shinyjs::hidden(
+                       span(id = "submitMessage", "Submitting..."),
+                       div(id = "error",
+                           div(br(), 
+                               tags$b("Error: "), 
+                               span(id = "errorMessage"))
+                       )
+                     )
+                   ),
+                   shinyjs::hidden(
+                     div(
+                       id = "thankYou",
+                       h3("Thank you for contributing your colors!"),
+                       actionLink("submitAnother", "Submit another response")
+                     )
+                   ) 
             )
           )
         )
@@ -290,9 +319,7 @@ server <- function(input, output, session){
   ## Download handler
   output$downloadColors <- downloadHandler(
     filename = function() {
-      paste0("colors_", 
-             str_replace(str_replace_all(as.character(Sys.time()), ":", "-"), 
-                         " ", "_"), ".csv")
+      paste0("colors_", dateTimeFormat(), ".csv")
     },
     content = function(file) {
       write.csv(colorsForExport(), file, row.names = FALSE)
@@ -326,7 +353,7 @@ server <- function(input, output, session){
   observeEvent(input$kaijaColors, {
     purrr::map2(.x = kaijaColors$character,
                 .y = kaijaColors$hex,
-                ~updateColourInput(session, inputId = .x, value = .y))
+                ~colourpicker::updateColourInput(session, inputId = .x, value = .y))
   })
   
   
@@ -334,7 +361,7 @@ server <- function(input, output, session){
   # Useful if people find it easier to input their colors when all the selectors start white, instead of replacing existing colors. 
   observeEvent(input$allWhite, {
     lapply(inputIds, function(x){
-      updateColourInput(session,
+      colourpicker::updateColourInput(session,
                         inputId = x,
                         value = "#FFFFFF")
     })
@@ -360,12 +387,81 @@ server <- function(input, output, session){
   ## describe other types of synesthesia
   output$otherSynesthesia <- renderUI({
     req(input$synesthesiaTypes)
-    if(!input$synesthesiaTypes == "other"){
+    if(!"other" %in% input$synesthesiaTypes){
       return(NULL)
     }else{
       textInput("otherSynesthesia", 
                 label = NULL, "")
     }
+  })
+  
+  # Enforce mandatory fields
+  observe({
+    # check if all mandatory fields have a value
+    mandatoryFilled <-
+      vapply(fieldsMandatory,
+             function(x) {
+               !is.null(input[[x]]) && input[[x]] != ""
+             },
+             logical(1))
+    mandatoryFilled <- all(c(mandatoryFilled, input$consent))
+    
+    # enable/disable the submit button
+    shinyjs::toggleState(id = "submit", condition = mandatoryFilled)
+  })
+  
+  # Compile all the answers to the contribution questions into a dataset
+  contributionData <- reactive({
+    # Process the form data
+    data <- sapply(fieldsAll, function(x) input[[x]])
+    data <- c(data, timestamp = as.character(lubridate::ymd_hms(Sys.time()))) %>%
+      lapply(., as.data.frame)
+    data <- data.table::rbindlist(data, idcol = "field") %>%
+      rename("value" = "X[[i]]") %>%
+      # Add the color data
+      bind_rows(colorsForExport() %>% 
+                  mutate(across(c("hex", "red", "green", "blue"), 
+                                as.character)) %>% 
+                  pivot_longer(cols = c("hex", "red", "green", "blue"), 
+                               names_to = "type", # the form data doesn't include a "type" column, but it will just get filled in with NA
+                               values_to = "value") %>% 
+                  rename("field" = "character"))
+  })
+  
+  # When the submit button is pressed, save the data, reset the form, and show the thank you message
+  observeEvent(input$submit, {
+    saveData(contributionData())
+    shinyjs::reset("contributeForm")
+    shinyjs::hide("contributeForm")
+    shinyjs::show("thankYou")
+  })
+  
+  # When the reset link is clicked, re-show the form:
+  observeEvent(input$submitAnother, {
+    shinyjs::show("contributeForm")
+    shinyjs::hide("thankYou")
+  }) 
+  
+  # Show text while submitting, and show error message if submit fails
+  observeEvent(input$submit, {
+    shinyjs::disable("submit")
+    shinyjs::show("submitMessage")
+    shinyjs::hide("error")
+    
+    tryCatch({
+      saveData(formData())
+      shinyjs::reset("contributeForm")
+      shinyjs::hide("contributeForm")
+      shinyjs::show("thankYou")
+    },
+    error = function(err) {
+      shinyjs::html("errorMessage", err$message)
+      shinyjs::show(id = "error", anim = TRUE, animType = "fade")
+    },
+    finally = {
+      shinyjs::enable("submit")
+      shinyjs::hide("submitMessage")
+    })
   })
   
 }
