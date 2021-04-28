@@ -52,7 +52,8 @@ saveData <- function(data) {
                       dateTimeFormat(),
                       digest::digest(data))
   
-  write.csv(x = data, file = file.path("responses", fileName),
-            row.names = FALSE, quote = TRUE)
+  # Create a new google sheet to hold this data
+  gs4_create(name = fileName,
+             sheets = list("sheet1" = data))
 }
 

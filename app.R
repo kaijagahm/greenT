@@ -183,7 +183,7 @@ ui <- function(request){ # UI as a function to enable bookmarking
                      radioButtons("gender", labelMandatory("What is your gender identity?"),
                                         choices = c("woman", "non-binary", 
                                                     "man", "prefer not to say", 
-                                                    "prefer to self-describe"), 
+                                                    "prefer to self-describe (click to add text)"), 
                                   selected = character(0), width = "100%"),
                      uiOutput("genderSelfDescribe"),
                      radioButtons("sex", labelMandatory("Sex assigned at birth:"),
@@ -208,7 +208,7 @@ ui <- function(request){ # UI as a function to enable bookmarking
                      radioButtons("family", "Do any of your family members also have grapheme-color associations?",
                                         choices = c("yes, more than one family member", "yes, one family member", "not that I know of"),
                                   selected = character(0), width = "100%"),
-                     checkboxGroupInput("synesthesiaTypes", "Do you experience other types of synesthesia beyond grapheme-color? Select all that apply.", choices = c("ordinal linguistic personification (sequences such as numbers, letters, days, months, etc. have genders/personalities)", "chromesthesia (sounds have associated colors)", "spatial sequence synesthesia (sequences such as numbers, letters, days, months, etc. have particular arrangements in space)", "mirror-touch synesthesia (seeing someone else feel a physical sensation and feeling the same sensation yourself)", "auditory-tactile synesthesia (hearing sounds causes physical sensations)", "number form synesthesia (groups of numbers have a mental map/spatial arrangement)", "lexical-gustatory synesthesia (words have associated tastes, smells, textures, etc.)", "sound-gustatory synesthesia (sounds have associated tastes, smells, textures, etc.)", "no other types of synesthesia", "other"),
+                     checkboxGroupInput("synesthesiaTypes", "Do you experience other types of synesthesia beyond grapheme-color? Select all that apply.", choices = c("ordinal linguistic personification (sequences such as numbers, letters, days, months, etc. have genders/personalities)", "chromesthesia (sounds have associated colors)", "spatial sequence synesthesia (sequences such as numbers, letters, days, months, etc. have particular arrangements in space)", "mirror-touch synesthesia (seeing someone else feel a physical sensation and feeling the same sensation yourself)", "auditory-tactile synesthesia (hearing sounds causes physical sensations)", "number form synesthesia (groups of numbers have a mental map/spatial arrangement)", "lexical-gustatory synesthesia (words have associated tastes, smells, textures, etc.)", "sound-gustatory synesthesia (sounds have associated tastes, smells, textures, etc.)", "no other types of synesthesia", "other (click to add text)"),
                                         selected = character(0), width = "100%"),
                      uiOutput("otherSynesthesia"),
                      textInput("comments", "Any comments?", "", width = "100%"),
@@ -376,7 +376,7 @@ server <- function(input, output, session){
   ## self-describe gender
   output$genderSelfDescribe <- renderUI({
     req(input$gender)
-    if(!input$gender == "prefer to self-describe"){
+    if(!input$gender == "prefer to self-describe (click to add text)"){
       return(NULL)
     }else{
       textInput("genderSelfDescribe", 
@@ -387,7 +387,7 @@ server <- function(input, output, session){
   ## describe other types of synesthesia
   output$otherSynesthesia <- renderUI({
     req(input$synesthesiaTypes)
-    if(!"other" %in% input$synesthesiaTypes){
+    if(!"other (click to add text)" %in% input$synesthesiaTypes){
       return(NULL)
     }else{
       textInput("otherSynesthesia", 
