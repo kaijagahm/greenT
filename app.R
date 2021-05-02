@@ -18,8 +18,8 @@ font_add_google("Baloo 2")
 showtext_auto()
 source("about.R")
 source("contribute.R")
-library(googlesheets4)
 library(googledrive)
+library(googlesheets4)
 options(
   gargle_oauth_cache = ".secrets",
   gargle_oauth_email = TRUE,

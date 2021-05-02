@@ -52,8 +52,14 @@ saveData <- function(data) {
                       dateTimeFormat(),
                       digest::digest(data))
   
-  # Create a new google sheet to hold this data
-  gs4_create(name = fileName,
-             sheets = list("sheet1" = data))
+  # Create an empty spreadsheet
+  ss <- gs4_create(name = fileName, 
+                   sheets = "data")
+  
+  # Put the data.frame in the spreadsheet and provide the sheet_id so it can be found
+  sheet_write(data, ss, sheet = "data")
+  
+  # Move your spreadsheet to the desired location
+  drive_mv(file = ss, path = "greenT_responses/")
 }
 
