@@ -18,6 +18,13 @@ font_add_google("Baloo 2")
 showtext_auto()
 source("about.R")
 source("contribute.R")
+library(googlesheets4)
+library(googledrive)
+options(
+  gargle_oauth_cache = ".secrets",
+  gargle_oauth_email = TRUE,
+  gargle_verbosity = "debug"
+)
 
 # UI ----------------------------------------------------------------------
 ui <- function(request){ # UI as a function to enable bookmarking
