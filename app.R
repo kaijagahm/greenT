@@ -171,79 +171,14 @@ ui <- function(request){ # UI as a function to enable bookmarking
                    howToContribute,
                    
                    # Contribution form --------------------------------------
-                   div(
-                     id = "contributeForm",
-                     textInput("name", 
-                               labelMandatory("Name (this will be used to keep track of responses for data analysis only, and will not be included in public datasets or published/posted analyses. You can use an alias if you prefer.)"), 
-                               "", width = "100%"),
-                     textInput("email", 
-                               "Email address, if you don't mind being contacted with questions about your experience of synesthesia (optional!)", 
-                               "", width = "100%"),
-                     numericInput("birthYear", "Birth year", 
-                                  min = 1900, max = year(Sys.Date()),
-                                  value = "", step = 1),
-                     radioButtons("handedness", 
-                                        labelMandatory("Are you right-handed or left-handed?"),
-                                        choices = c("left", "right", 
-                                                    "ambidextrous", "prefer not to say"), 
-                                  selected = character(0), width = "100%"),
-                     radioButtons("gender", labelMandatory("What is your gender identity?"),
-                                        choices = c("woman", "non-binary", 
-                                                    "man", "prefer not to say", 
-                                                    "prefer to self-describe (click to add text)"), 
-                                  selected = character(0), width = "100%"),
-                     uiOutput("genderSelfDescribe"),
-                     radioButtons("sex", labelMandatory("Sex assigned at birth:"),
-                                        choices = c("female", "male", "intersex", 
-                                                    "prefer not to say"), 
-                                  selected = character(0), width = "100%"),
-                     radioButtons("strong", "How strong are your color associations?",
-                                        choices = c("very strong", "moderately strong", 
-                                                    "neither strong nor weak", "moderately weak", 
-                                                    "very weak"), 
-                                  selected = character(0), width = "100%"),
-                     radioButtons("consistent", "How consistent are your color associations?",
-                                        choices = c("very consistent", "mostly consistent", 
-                                                    "pretty variable", "extremely variable"), 
-                                  selected = character(0), width = "100%"),
-                     radioButtons("synesthesia", labelMandatory("Do you consider yourself to have grapheme-color synesthesia?"),
-                                        choices = c("yes", "no", "not sure"), 
-                                  selected = character(0), width = "100%"),
-                     radioButtons("howLong", "How long have you had color-grapheme associations?", 
-                                        choices = c("as long as I can remember", "a long time, but I can remember not having them", "they developed more recently", "I don't have consistent color-grapheme associations"), 
-                                  selected = character(0), width = "100%"),
-                     radioButtons("family", "Do any of your family members also have grapheme-color associations?",
-                                        choices = c("yes, more than one family member", "yes, one family member", "not that I know of"),
-                                  selected = character(0), width = "100%"),
-                     checkboxGroupInput("synesthesiaTypes", "Do you experience other types of synesthesia beyond grapheme-color? Select all that apply.", choices = c("ordinal linguistic personification (sequences such as numbers, letters, days, months, etc. have genders/personalities)", "chromesthesia (sounds have associated colors)", "spatial sequence synesthesia (sequences such as numbers, letters, days, months, etc. have particular arrangements in space)", "mirror-touch synesthesia (seeing someone else feel a physical sensation and feeling the same sensation yourself)", "auditory-tactile synesthesia (hearing sounds causes physical sensations)", "number form synesthesia (groups of numbers have a mental map/spatial arrangement)", "lexical-gustatory synesthesia (words have associated tastes, smells, textures, etc.)", "sound-gustatory synesthesia (sounds have associated tastes, smells, textures, etc.)", "no other types of synesthesia", "other (click to add text)"),
-                                        selected = character(0), width = "100%"),
-                     uiOutput("otherSynesthesia"),
-                     textInput("comments", "Any comments?", "", width = "100%"),
-                     strong("Consent and submit"),
-                     checkboxInput("consent", labelMandatory("I agree to submit the information I have provided, and the colors I selected, to Kaija Gahm (kaija.gahm@gmail.com). I understand that my data may be used in blog posts, informal analyses, etc., but my name and email will not be attached. If I provided an email address, I understand that I may be contacted about my responses, but my email address will not be made public."), width = "100%"),
-                     actionButton("submit", "Submit", class = "btn-primary"),
-                     shinyjs::hidden(
-                       span(id = "submitMessage", "Submitting..."),
-                       div(id = "error",
-                           div(br(), 
-                               tags$b("Error: "), 
-                               span(id = "errorMessage"))
-                       )
-                     )
-                   ),
-                   shinyjs::hidden(
-                     div(
-                       id = "thankYou",
-                       h3("Thank you for contributing your colors!"),
-                       actionLink("submitAnother", "Submit another response")
-                     )
-                   ) 
+                   shinysurveys::surveyOutput(questions,
+                                              "Contribute your colors")
+                   )
             )
           )
         )
       )
     )
-  )
 }
 
 server <- function(input, output, session){
@@ -379,43 +314,7 @@ server <- function(input, output, session){
   
   
   # Contribute form -------------------------------------------------------
-  # Dynamic options
-  ## self-describe gender
-  output$genderSelfDescribe <- renderUI({
-    req(input$gender)
-    if(!input$gender == "prefer to self-describe (click to add text)"){
-      return(NULL)
-    }else{
-      textInput("genderSelfDescribe", 
-                label = NULL, "")
-    }
-  })
-  
-  ## describe other types of synesthesia
-  output$otherSynesthesia <- renderUI({
-    req(input$synesthesiaTypes)
-    if(!"other (click to add text)" %in% input$synesthesiaTypes){
-      return(NULL)
-    }else{
-      textInput("otherSynesthesia", 
-                label = NULL, "")
-    }
-  })
-  
-  # Enforce mandatory fields
-  observe({
-    # check if all mandatory fields have a value
-    mandatoryFilled <-
-      vapply(fieldsMandatory,
-             function(x) {
-               !is.null(input[[x]]) && input[[x]] != ""
-             },
-             logical(1))
-    mandatoryFilled <- all(c(mandatoryFilled, input$consent))
-    
-    # enable/disable the submit button
-    shinyjs::toggleState(id = "submit", condition = mandatoryFilled)
-  })
+  shinysurveys::renderSurvey(questions, theme = "#FFFFFF")
   
   # Compile all the answers to the contribution questions into a dataset
   contributionData <- reactive({
