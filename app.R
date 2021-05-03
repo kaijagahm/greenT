@@ -314,7 +314,7 @@ server <- function(input, output, session){
   
   
   # Contribute form -------------------------------------------------------
-  shinysurveys::renderSurvey(questions, theme = "#FFFFFF")
+  shinysurveys::renderSurvey(questions, theme = NULL)
   
   # Compile all the answers to the contribution questions into a dataset
   contributionData <- reactive({
