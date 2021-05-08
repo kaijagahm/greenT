@@ -232,12 +232,12 @@ ui <- function(request){ # UI as a function to enable bookmarking
                        actionLink("submitAnother", "Submit another response")
                      )
                    ) 
+                   )
             )
           )
         )
       )
     )
-  )
 }
 
 server <- function(input, output, session){

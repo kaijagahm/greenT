@@ -12,3 +12,7 @@ body {
 #coloredText{
   font-size: 5em;
 }
+
+.required {
+  color: red;
+}
