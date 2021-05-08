@@ -135,10 +135,6 @@ ui <- function(request){ # UI as a function to enable bookmarking
                      ),
                      style = "margin-bottom: -10px"),
                      plotOutput("colorBlocks")
-            ),
-            # colored text, rendered with javascript
-            tabPanel("Text", 
-                     textOutput("coloredText")
             )
           )
         ),
@@ -348,12 +344,6 @@ server <- function(input, output, session){
              device = 'png', width = length(split()), 
              height = 5)
     })
-  
-  # Plot colored text -------------------------------------------------------
-  output$coloredText <- renderText({
-    input$displayText
-  })
-  
   
   # Set Kaija colors --------------------------------------------------------
   # In case people want to see the colors as I see them
