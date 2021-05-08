@@ -147,14 +147,14 @@ ui <- function(request){ # UI as a function to enable bookmarking
           fluidRow(
             column(width = 10,
                    offset = 1,
-                   contributors # see about.R
+                   moreAboutSynesthesia # see about.R
             )
           ),
           fluidRow(
             column(width = 10,
                    offset = 1,
-                   moreAboutSynesthesia # see about.R
-            )
+                   acknowledgments # see about.R
+                   )
           )
         ),
         tabPanel(
@@ -170,6 +170,10 @@ ui <- function(request){ # UI as a function to enable bookmarking
                      textInput("name", 
                                labelMandatory("Name (this will be used to keep track of responses for data analysis only, and will not be included in public datasets or published/posted analyses. You can use an alias if you prefer.)"), 
                                "", width = "100%"),
+                     checkboxInput("yesSetColors",
+                                   labelMandatory("I confirm that the colors set in the Explore tab are the ones I want to submit. (If not, please go back and set your colors before filling out this form!)"),
+                                   value = FALSE,
+                                   width = "100%"),
                      textInput("email", 
                                "Email address, if you don't mind being contacted with questions about your experience of synesthesia (optional!)", 
                                "", width = "100%"),
@@ -299,7 +303,7 @@ server <- function(input, output, session){
                                           y = ymin + 0.3, 
                                           label = grapheme,
                                           col = contrastColor),
-                                      size = 7,
+                                      size = 10,
                                       family = "Baloo 2")}+
       scale_color_identity()
     plotVals$rectanglePlot <- p
@@ -333,6 +337,8 @@ server <- function(input, output, session){
       paste0(str_replace_all(tolower(input$displayText),
                              "[^a-z0-9]", "_") %>% 
                str_replace_all(., "_{2,}", "_"), 
+             "_",
+             dateTimeFormat(),
              '.png')
     },
     

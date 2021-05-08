@@ -61,5 +61,3 @@ questions <- data.frame(question = c("Name (this will be used to keep track of r
                                      rep(FALSE, 4), rep(TRUE, 3), rep(FALSE, 4),
                                      rep(FALSE, 3), rep(FALSE, 10), FALSE, TRUE)
 )
-
-
