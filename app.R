@@ -345,8 +345,8 @@ server <- function(input, output, session){
     content = function(file){
       req(plotVals$rectanglePlot)
       ggsave(file, plot = plotVals$rectanglePlot, 
-             device = 'png', width = length(split()), 
-             height = 5)
+             device = 'png', width = length(split())/2, 
+             height = 5/2)
     })
   
   # Set Kaija colors --------------------------------------------------------
