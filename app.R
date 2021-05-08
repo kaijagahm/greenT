@@ -122,19 +122,17 @@ ui <- function(request){ # UI as a function to enable bookmarking
             )
           ),
           # Output object -------------------------------------------------------
-          tabsetPanel(
-            id = "viz",
-            type = "tabs",
-            # a ggplot object showing colored blocks
-            tabPanel("Rectangles", 
-                     br(),
-                     div(prettySwitch(
-                       inputId = "showLetters",
-                       label = "Show letters?",
-                       value = TRUE
-                     ),
-                     style = "margin-bottom: -10px"),
-                     plotOutput("colorBlocks")
+          # a ggplot object showing colored blocks
+          fluidRow(
+            column(width = 12,
+                   br(),
+                   div(prettySwitch(
+                     inputId = "showLetters",
+                     label = "Show letters?",
+                     value = TRUE
+                   ),
+                   style = "margin-bottom: -10px"),
+                   plotOutput("colorBlocks")
             )
           )
         ),
@@ -179,37 +177,37 @@ ui <- function(request){ # UI as a function to enable bookmarking
                                   min = 1900, max = year(Sys.Date()),
                                   value = "", step = 1),
                      radioButtons("handedness", 
-                                        labelMandatory("Are you right-handed or left-handed?"),
-                                        choices = c("left", "right", 
-                                                    "ambidextrous", "prefer not to say"), 
+                                  labelMandatory("Are you right-handed or left-handed?"),
+                                  choices = c("left", "right", 
+                                              "ambidextrous", "prefer not to say"), 
                                   selected = character(0), width = "100%"),
                      radioButtons("gender", labelMandatory("What is your gender identity?"),
-                                        choices = c("woman", "non-binary", 
-                                                    "man", "prefer not to say", 
-                                                    "prefer to self-describe (click to add text)"), 
+                                  choices = c("woman", "non-binary", 
+                                              "man", "prefer not to say", 
+                                              "prefer to self-describe (click to add text)"), 
                                   selected = character(0), width = "100%"),
                      uiOutput("genderSelfDescribe"),
                      radioButtons("sex", labelMandatory("Sex assigned at birth:"),
-                                        choices = c("female", "male", "intersex", 
-                                                    "prefer not to say"), 
+                                  choices = c("female", "male", "intersex", 
+                                              "prefer not to say"), 
                                   selected = character(0), width = "100%"),
                      radioButtons("strong", "How strong are your color associations?",
-                                        choices = c("very strong", "moderately strong", 
-                                                    "neither strong nor weak", "moderately weak", 
-                                                    "very weak"), 
+                                  choices = c("very strong", "moderately strong", 
+                                              "neither strong nor weak", "moderately weak", 
+                                              "very weak"), 
                                   selected = character(0), width = "100%"),
                      radioButtons("consistent", "How consistent are your color associations?",
-                                        choices = c("very consistent", "mostly consistent", 
-                                                    "pretty variable", "extremely variable"), 
+                                  choices = c("very consistent", "mostly consistent", 
+                                              "pretty variable", "extremely variable"), 
                                   selected = character(0), width = "100%"),
                      radioButtons("synesthesia", labelMandatory("Do you consider yourself to have grapheme-color synesthesia?"),
-                                        choices = c("yes", "no", "not sure"), 
+                                  choices = c("yes", "no", "not sure"), 
                                   selected = character(0), width = "100%"),
                      radioButtons("howLong", "How long have you had color-grapheme associations?", 
-                                        choices = c("as long as I can remember", "a long time, but I can remember not having them", "they developed more recently", "I don't have consistent color-grapheme associations"), 
+                                  choices = c("as long as I can remember", "a long time, but I can remember not having them", "they developed more recently", "I don't have consistent color-grapheme associations"), 
                                   selected = character(0), width = "100%"),
                      radioButtons("family", "Do any of your family members also have grapheme-color associations?",
-                                        choices = c("yes, more than one family member", "yes, one family member", "not that I know of"),
+                                  choices = c("yes, more than one family member", "yes, one family member", "not that I know of"),
                                   selected = character(0), width = "100%"),
                      checkboxGroupInput("synesthesiaTypes", "Do you experience other types of synesthesia beyond grapheme-color? Select all that apply.", choices = c("ordinal linguistic personification (sequences such as numbers, letters, days, months, etc. have genders/personalities)", "chromesthesia (sounds have associated colors)", "spatial sequence synesthesia (sequences such as numbers, letters, days, months, etc. have particular arrangements in space)", "mirror-touch synesthesia (seeing someone else feel a physical sensation and feeling the same sensation yourself)", "auditory-tactile synesthesia (hearing sounds causes physical sensations)", "number form synesthesia (groups of numbers have a mental map/spatial arrangement)", "lexical-gustatory synesthesia (words have associated tastes, smells, textures, etc.)", "sound-gustatory synesthesia (sounds have associated tastes, smells, textures, etc.)", "no other types of synesthesia", "other (click to add text)"),
                                         selected = character(0), width = "100%"),
@@ -359,8 +357,8 @@ server <- function(input, output, session){
   observeEvent(input$allWhite, {
     lapply(inputIds, function(x){
       colourpicker::updateColourInput(session,
-                        inputId = x,
-                        value = "#FFFFFF")
+                                      inputId = x,
+                                      value = "#FFFFFF")
     })
   })
   
