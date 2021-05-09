@@ -5,9 +5,9 @@ account: kaijagahm
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3724791
-bundleId: 4578175
+bundleId: 4577880
 url: https://kaijagahm.shinyapps.io/greenT/
-when: 1620596357.92409
+when: 1620589570.06168
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: .Rprofile
