@@ -27,7 +27,7 @@ colorInit <- function(x = .x, y = .y){
 }
 
 # Mandatory fields for contribution form ----------------------------------
-fieldsMandatory <- c("name", "handedness", "gender", "sex", "synesthesia", "consent")
+fieldsMandatory <- c("name", "yesSetColors", "handedness", "gender", "sex", "synesthesia", "consent")
 labelMandatory <- function(label) {
   tagList(
     label,
@@ -35,7 +35,7 @@ labelMandatory <- function(label) {
   )
 }
 
-fieldsAll <- c("name", "email", "birthYear", "handedness", "gender", "genderSelfDescribe", "sex", "strong", "consistent", "synesthesia", "howLong", "family", "synesthesiaTypes", "otherSynesthesia", "comments", "consent")
+fieldsAll <- c("name", "yesSetColors", "email", "birthYear", "handedness", "gender", "genderSelfDescribe", "sex", "strong", "consistent", "synesthesia", "howLong", "family", "synesthesiaTypes", "otherSynesthesia", "comments", "consent")
 
 # dateTimeFormat ----------------------------------------------------------
 dateTimeFormat <- function(){
@@ -48,18 +48,16 @@ dateTimeFormat <- function(){
 
 # Function to save form data ----------------------------------------------
 saveData <- function(data) {
-  fileName <- sprintf("%s_%s.csv",
+  fileName <- sprintf("%s_%s_%s",
+                      "greenT",
                       dateTimeFormat(),
                       digest::digest(data))
   
   # Create an empty spreadsheet
-  ss <- gs4_create(name = fileName, 
+  ss <- gs4_create(name = fileName,
                    sheets = "data")
-  
+
   # Put the data.frame in the spreadsheet and provide the sheet_id so it can be found
   sheet_write(data, ss, sheet = "data")
-  
-  # Move your spreadsheet to the desired location
-  drive_mv(file = ss, path = "greenT_responses/")
 }
 

@@ -38,7 +38,7 @@ ui <- function(request){ # UI as a function to enable bookmarking
     ),
     
     # Title and subtitle, two different formats
-    titlePanel(div(HTML("<b>greenT  </b> <em><small>exploring grapheme-color synesthesia</em></small>")),
+    titlePanel(div(HTML("<b>greenT  </b> <em><small>exploring grapheme-color synesthesia</em></small>"), style = "font-size:24px !important;"),
                windowTitle = "greenT"), # windowTitle controls what shows up on the browser tab
     
     # Body
@@ -132,8 +132,9 @@ ui <- function(request){ # UI as a function to enable bookmarking
                      value = TRUE
                    ),
                    style = "margin-bottom: -10px"),
-                   plotOutput("colorBlocks")
-            )
+                   plotOutput("colorBlocks"),
+                   br()
+            ),
           )
         ),
         tabPanel(
@@ -219,14 +220,13 @@ ui <- function(request){ # UI as a function to enable bookmarking
                      textInput("comments", "Any comments?", "", width = "100%"),
                      strong("Consent and submit"),
                      checkboxInput("consent", labelMandatory("I agree to submit the information I have provided, and the colors I selected, to Kaija Gahm (kaija.gahm@gmail.com). I understand that my data may be used in blog posts, informal analyses, etc., but my name and email will not be attached. If I provided an email address, I understand that I may be contacted about my responses, but my email address will not be made public."), width = "100%"),
-                     actionButton("submit", "Submit", class = "btn-primary"),
-                     shinyjs::hidden(
-                       span(id = "submitMessage", "Submitting..."),
-                       div(id = "error",
-                           div(br(), 
-                               tags$b("Error: "), 
-                               span(id = "errorMessage"))
-                       )
+                     actionButton("submit", "Submit", class = "btn-primary")
+                   ),
+                   shinyjs::hidden(
+                     div(id = "error",
+                         div(br(),
+                             tags$b("Error: "),
+                             span(id = "errorMessage"))
                      )
                    ),
                    shinyjs::hidden(
@@ -235,7 +235,15 @@ ui <- function(request){ # UI as a function to enable bookmarking
                        h3("Thank you for contributing your colors!"),
                        actionLink("submitAnother", "Submit another response")
                      )
-                   ) 
+                   ),
+                   shinyjs::hidden(
+                     div(
+                       id = "submitMessage",
+                       h4("Submitting...")
+                     )
+                   ),
+                   br(),
+                   br()
                    )
             )
           )
@@ -429,12 +437,12 @@ server <- function(input, output, session){
                   rename("field" = "character"))
   })
   
-  # When the submit button is pressed, save the data, reset the form, and show the thank you message
+  # When the submit button is pressed, reset the form and show the thank you message
   observeEvent(input$submit, {
-    saveData(contributionData())
-    shinyjs::reset("contributeForm")
-    shinyjs::hide("contributeForm")
-    shinyjs::show("thankYou")
+    delay(1000, shinyjs::reset("contributeForm"))
+    delay(1000, shinyjs::hide("contributeForm"))
+    delay(1000, shinyjs::show("thankYou"))
+    shinyjs::show("submitMessage")
   })
   
   # When the reset link is clicked, re-show the form:
@@ -446,11 +454,10 @@ server <- function(input, output, session){
   # Show text while submitting, and show error message if submit fails
   observeEvent(input$submit, {
     shinyjs::disable("submit")
-    shinyjs::show("submitMessage")
     shinyjs::hide("error")
     
     tryCatch({
-      saveData(formData())
+      saveData(contributionData())
       shinyjs::reset("contributeForm")
       shinyjs::hide("contributeForm")
       shinyjs::show("thankYou")
