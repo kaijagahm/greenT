@@ -27,7 +27,7 @@ options(
 )
 
 # UI ----------------------------------------------------------------------
-ui <- function(request){ # UI as a function to enable bookmarking
+ui <- function(request){
   fluidPage(
     shinyjs::useShinyjs(), # allow shinyjs
     # Change the font for the whole app -----------------------------------
@@ -104,16 +104,18 @@ ui <- function(request){ # UI as a function to enable bookmarking
           ),
           fluidRow(
             column(width = 12,
-                   div(style = "display:inline-block;margin-left:10px",
+                   div(style = "display:inline-block;margin-left:10px;margin-bottom:-10px",
                        textInput("displayText", 
                                  "Text to display:", 
                                  value = "Type something") # initial text in the box
                    ),
-                   div(style = "display:inline-block;margin-left:10px",
-                       bookmarkButton(label = "Save app state",
-                                      icon = shiny::icon("heart-empty", lib = "glyphicon")
+                   div(style = "display:inline-block;margin-left:10px;margin-bottom:-10px",
+                       prettySwitch(
+                         inputId = "showLetters",
+                         label = "Show letters?",
+                         value = TRUE
                        )
-                   )    
+                   )
             )
           ),
           # Output object -------------------------------------------------------
@@ -121,13 +123,6 @@ ui <- function(request){ # UI as a function to enable bookmarking
           fluidRow(
             column(width = 12,
                    br(),
-                   div(style = "margin-left:10px;margin-bottom:-10px",
-                       prettySwitch(
-                         inputId = "showLetters",
-                         label = "Show letters?",
-                         value = TRUE
-                       )
-                   ),
                    plotOutput("colorBlocks"),
                    div(style = "margin-left:10px;margin-bottom:25px",
                        downloadButton("downloadPlot",
@@ -268,10 +263,6 @@ server <- function(input, output, session){
   }) %>%
     debounce(25)
   
-  # observeEvent(colorsDF(),{
-  #   browser()
-  # })
-  
   # Convert input to lowercase, replace all non-alphanumeric characters with a blank space, and split the string into a vector
   split <- reactive( 
     unlist(strsplit(str_replace_all(tolower(input$displayText),
@@ -375,10 +366,6 @@ server <- function(input, output, session){
     })
   })
   
-  # Exclude the two buttons from bookmarking so that the observeEvent's won't fire. Could also do this with ignoreInit = T in each observeEvent, but we decided this was cleaner.
-  setBookmarkExclude(c("kaijaColors", "allWhite"))
-  
-  
   # Contribute form -------------------------------------------------------
   # Dynamic options
   ## self-describe gender
@@ -472,4 +459,7 @@ server <- function(input, output, session){
   })
   
 }
-shinyApp(ui, server, enableBookmarking = "url")
+shinyApp(
+  ui, 
+  server
+)
