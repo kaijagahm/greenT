@@ -38,7 +38,7 @@ ui <- function(request){ # UI as a function to enable bookmarking
     ),
     
     # Title and subtitle, two different formats
-    titlePanel(div(HTML("<b>greenT  </b> <em><small>exploring grapheme-color synesthesia</em></small>"), style = "font-size:24px !important;"),
+    titlePanel(div(HTML("<b style = 'font-size: 24px;'>greenT</b> <em><small>exploring grapheme-color synesthesia</em></small>")),
                windowTitle = "greenT"), # windowTitle controls what shows up on the browser tab
     
     # Body
