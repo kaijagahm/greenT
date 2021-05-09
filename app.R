@@ -91,34 +91,29 @@ ui <- function(request){ # UI as a function to enable bookmarking
               fluidRow(
                 column(width = 12,
                        actionButton("kaijaColors",
-                                    "Kaija's colors"),
+                                    "Kaija's colors",
+                                    style = "margin-right:10px"),
                        actionButton("allWhite",
-                                    "Set all to white")
+                                    "Set all to white",
+                                    style = "margin-right:10px"),
+                       downloadButton("downloadColors",
+                                      label = "Download colors as .csv")
                 )
               )
             )
           ),
           fluidRow(
-            # Text input ---------------------------------------------------------
-            column(width = 4,
-                   textInput("displayText", 
-                             "Text to display:", 
-                             value = "Type something") # initial text in the box
-            ),
-            # Save inputs as csv ------------------------------------------------
-            column(width = 3, offset = 1,
-                   br(),
-                   downloadButton("downloadColors",
-                                  label = "Download colors as .csv"),
-                   downloadButton("downloadPlot",
-                                  "Download rectangles as .png")
-            ),
-            
-            # Bookmark button ----------------------------------------------------
-            column(width = 3, offset = 1,
-                   br(), # just so the spacing aligns better with the text entry box
-                   bookmarkButton(label = "Save app state",
-                                  icon = shiny::icon("heart-empty", lib = "glyphicon"))
+            column(width = 12,
+                   div(style = "display:inline-block;margin-left:10px",
+                       textInput("displayText", 
+                                 "Text to display:", 
+                                 value = "Type something") # initial text in the box
+                   ),
+                   div(style = "display:inline-block;margin-left:10px",
+                       bookmarkButton(label = "Save app state",
+                                      icon = shiny::icon("heart-empty", lib = "glyphicon")
+                       )
+                   )    
             )
           ),
           # Output object -------------------------------------------------------
@@ -126,14 +121,18 @@ ui <- function(request){ # UI as a function to enable bookmarking
           fluidRow(
             column(width = 12,
                    br(),
-                   div(prettySwitch(
-                     inputId = "showLetters",
-                     label = "Show letters?",
-                     value = TRUE
+                   div(style = "margin-left:10px;margin-bottom:-10px",
+                       prettySwitch(
+                         inputId = "showLetters",
+                         label = "Show letters?",
+                         value = TRUE
+                       )
                    ),
-                   style = "margin-bottom: -10px"),
                    plotOutput("colorBlocks"),
-                   br()
+                   div(style = "margin-left:10px;margin-bottom:25px",
+                       downloadButton("downloadPlot",
+                                      "Download rectangles as .png")
+                   )
             ),
           )
         ),
@@ -155,7 +154,7 @@ ui <- function(request){ # UI as a function to enable bookmarking
             column(width = 10,
                    offset = 1,
                    acknowledgments # see about.R
-                   )
+            )
           )
         ),
         tabPanel(
@@ -244,12 +243,12 @@ ui <- function(request){ # UI as a function to enable bookmarking
                    ),
                    br(),
                    br()
-                   )
             )
           )
         )
       )
     )
+  )
 }
 
 server <- function(input, output, session){
