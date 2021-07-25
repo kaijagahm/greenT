@@ -283,7 +283,8 @@ server <- function(input, output, session){
       mutate(r = col2rgb(hex)[1,],
              g = col2rgb(hex)[2,],
              b = col2rgb(hex)[3,]) %>%
-      mutate(contrastColor = case_when((r*0.299 + g*0.587 + b*0.114) > 140 ~ "#000000",
+      mutate(contrastColor = case_when((r*0.299 + g*0.587 + b*0.114) > 
+                                         140 ~ "#000000",
                                        TRUE ~ "#FFFFFF"))
   })
   
