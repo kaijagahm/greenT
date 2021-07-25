@@ -55,6 +55,7 @@ ui <- function(request){
             id = "colorSelectors", open = "setColors",
             # Collapsible panel for the color selectors.
             bsCollapsePanel(
+              # This collapsible panel contains the color picker widgets.
               title = HTML("<em><small>Show/hide selectors</em></small>"), 
               value = "setColors", # allows us to control open/close programmatically, if we want
               column(width = 2,
@@ -89,6 +90,7 @@ ui <- function(request){
                                  colorInit)
               ),
               fluidRow(
+                # This row contains buttons for setting the color pickers to Kaija's colors or to white
                 column(width = 12,
                        actionButton("kaijaColors",
                                     "Kaija's colors",
@@ -103,6 +105,7 @@ ui <- function(request){
             )
           ),
           fluidRow(
+            # This row includes control buttons: enter the display text, show/hide letters switch
             column(width = 12,
                    div(style = "display:inline-block;margin-left:10px;margin-bottom:-10px",
                        textInput("displayText", 
@@ -121,6 +124,7 @@ ui <- function(request){
           # Output object -------------------------------------------------------
           # a ggplot object showing colored blocks
           fluidRow(
+            # Contains the plot output and a button to download it
             column(width = 12,
                    br(),
                    plotOutput("colorBlocks"),
@@ -132,6 +136,7 @@ ui <- function(request){
           )
         ),
         tabPanel(
+          # Information about the app and about synesthesia
           title = "About",
           fluidRow(
             column(width = 10,
@@ -153,6 +158,7 @@ ui <- function(request){
           )
         ),
         tabPanel(
+          # Mimicking a google form to allow users to contribute their colors
           title = "Contribute your colors",
           fluidRow(
             column(width = 10,
@@ -160,6 +166,7 @@ ui <- function(request){
                    howToContribute,
                    
                    # Contribution form --------------------------------------
+                   # Created as a separate html div
                    div(
                      id = "contributeForm",
                      textInput("name", 
